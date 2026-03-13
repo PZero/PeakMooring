@@ -33,6 +33,7 @@ interface MooringRequest {
     last_name: string;
     email: string;
   };
+  offered_type_id?: number;
   request_preferred_types?: {
     type_id: number;
     mooring_types: MooringType;
@@ -114,10 +115,13 @@ function AdminDashboard() {
     if (!error) fetchData();
   };
 
-  const startAssignment = async (requestId: string) => {
+  const startAssignment = async (requestId: string, typeId: number) => {
     const { error } = await supabase
       .from('mooring_requests')
-      .update({ status: 'pending_confirmation' })
+      .update({ 
+        status: 'pending_confirmation',
+        offered_type_id: typeId
+      })
       .eq('id', requestId);
     
     if (!error) {
@@ -126,12 +130,16 @@ function AdminDashboard() {
       if (req) {
         await sendNotificationToUser(
           req.profiles.email, 
-          `Ciao ${req.profiles.first_name}, un posto barca è disponibile per te! Accedi al portale per confermare.`
+          `Ciao ${req.profiles.first_name}, il posto barca "${getMooringLabel(typeId)}" è disponibile per te! Accedi al portale per confermare.`
         );
       }
       alert('Proposta inviata all\'utente. In attesa di conferma.');
       fetchData();
     }
+  };
+
+  const getMooringLabel = (id: number) => {
+    return types.find(t => t.id === id)?.label || 'Ormeggio';
   };
 
 
@@ -250,12 +258,24 @@ function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4">
                         {r.status === 'waiting' && (
-                          <button 
-                            onClick={() => startAssignment(r.id)}
-                            className="btn btn-primary py-1 px-3 text-xs flex items-center gap-1"
-                          >
-                            <Plus size={14} /> Assegna
-                          </button>
+                          <div className="flex flex-col gap-1">
+                            {r.request_preferred_types && r.request_preferred_types.length > 0 ? (
+                              r.request_preferred_types.map(pt => (
+                                <button 
+                                  key={pt.type_id}
+                                  onClick={() => startAssignment(r.id, pt.type_id)}
+                                  className="btn btn-primary py-1 px-3 text-[10px] flex items-center justify-center gap-1 whitespace-nowrap"
+                                >
+                                  <Plus size={10} /> Proponi {pt.mooring_types.label}
+                                </button>
+                              ))
+                            ) : (
+                              <p className="text-[10px] text-gray-500 italic text-center">Nessuna opzione compatibile</p>
+                            )}
+                          </div>
+                        )}
+                        {r.status === 'pending_confirmation' && (
+                          <div className="text-[10px] text-blue-400 font-medium">Offerto: {getMooringLabel(r.offered_type_id || 0)}</div>
                         )}
                       </td>
                     </tr>

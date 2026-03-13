@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
 import { List, Plus, Trash2, Clock, CheckCircle, XCircle } from 'lucide-react';
-import { initOneSignal } from '../lib/notifications';
+import { initOneSignal, sendNotificationToUser } from '../lib/notifications';
 
 interface MooringType {
   id: number;
@@ -23,7 +23,9 @@ interface MooringRequest {
   profiles?: {
     first_name: string;
     last_name: string;
+    email: string;
   };
+  offered_type_id?: number;
   request_preferred_types?: {
     type_id: number;
     mooring_types: MooringType;
@@ -47,7 +49,7 @@ function UserDashboard({ session }: { session: any }) {
     setLoading(true);
     const { data } = await supabase
       .from('mooring_requests')
-      .select('*, profiles(first_name, last_name), request_preferred_types(type_id, mooring_types(*))')
+      .select('*, profiles(first_name, last_name, email), request_preferred_types(type_id, mooring_types(*))')
       .order('created_at', { ascending: true });
 
     if (data) {
@@ -154,17 +156,59 @@ function UserDashboard({ session }: { session: any }) {
 
   const updateStatus = async (id: string, newStatus: 'confirmed' | 'rejected') => {
     let updateData: any = { status: newStatus };
+    const currentRequest = requests.find(r => r.id === id);
     
     // If rejected, the user goes to the end of the queue (update created_at)
     if (newStatus === 'rejected') {
+      updateData.status = 'waiting';
       updateData.created_at = new Date().toISOString();
+      updateData.offered_type_id = null; // Clear the offer
       alert('Hai rifiutato la proposta. La tua richiesta è stata spostata in fondo alla graduatoria.');
     } else {
       alert('Congratulazioni! Hai confermato il posto barca. Verrai contattato dall\'amministratore.');
     }
 
     const { error } = await supabase.from('mooring_requests').update(updateData).eq('id', id);
-    if (!error) fetchRequests();
+    
+    if (!error) {
+      if (newStatus === 'rejected' && currentRequest?.offered_type_id) {
+        await handleAutomaticReassignment(currentRequest.offered_type_id);
+      }
+      fetchRequests();
+    }
+  };
+
+  const handleAutomaticReassignment = async (typeId: number) => {
+    // 1. Fetch all requests in waiting status
+    const { data: waitingRequests } = await supabase
+      .from('mooring_requests')
+      .select('*, profiles(first_name, last_name, email), request_preferred_types!inner(type_id)')
+      .eq('status', 'waiting')
+      .eq('request_preferred_types.type_id', typeId)
+      .order('created_at', { ascending: true });
+
+    if (waitingRequests && waitingRequests.length > 0) {
+      const nextRequest = waitingRequests[0];
+      
+      // 2. Propose to the next compatible user
+      const { error } = await supabase
+        .from('mooring_requests')
+        .update({ 
+          status: 'pending_confirmation',
+          offered_type_id: typeId 
+        })
+        .eq('id', nextRequest.id);
+
+      if (!error) {
+        // 3. Notify the new candidate
+        const typeLabel = nextRequest.request_preferred_types?.find((pt: any) => pt.type_id === typeId)?.mooring_types?.label || 'un posto barca';
+        await sendNotificationToUser(
+          nextRequest.profiles.email,
+          `Ottime notizie! Un posto barca compatibile (${typeLabel}) si è liberato. Accedi al portale per confermare la tua richiesta.`
+        );
+        console.log('Automatic reassignment successful for request:', nextRequest.id);
+      }
+    }
   };
 
   const maskData = (value: string, isLoggedUser: boolean) => {
