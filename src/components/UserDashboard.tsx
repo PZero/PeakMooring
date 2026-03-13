@@ -416,38 +416,51 @@ function UserDashboard({ session }: { session: any }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {requests.map((r, index) => {
+                  {(requests as any[]).flatMap((r, index) => {
                     const isMine = r.user_id === session.user.id;
-                    return (
-                      <tr key={r.id} className={isMine ? 'bg-blue-500/10' : ''}>
-                        <td className="px-6 py-4 font-mono text-gray-500">{index + 1}</td>
-                        <td className="px-6 py-4">
-                          <div className="font-medium">
-                            {truncateName(r.profiles?.first_name || '', r.profiles?.last_name || '', isMine)}
+                    const preferredTypes = r.request_preferred_types || [];
+                    
+                    if (preferredTypes.length === 0) {
+                      return [{ ...r, pt: null, globalIndex: index + 1, isMine }];
+                    }
+                    
+                    return preferredTypes.map((pt: any) => ({
+                      ...r,
+                      pt: pt,
+                      globalIndex: index + 1,
+                      isMine
+                    }));
+                  }).map((row: any) => (
+                    <tr key={`${row.id}-${row.pt?.type_id || 'none'}`} className={row.isMine ? 'bg-blue-500/10' : ''}>
+                      <td className="px-6 py-4 font-mono text-gray-500">{row.globalIndex}</td>
+                      <td className="px-6 py-4">
+                        <div className="font-medium">
+                          {truncateName(row.profiles?.first_name || '', row.profiles?.last_name || '', row.isMine)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {maskData(row.fiscal_code, row.isMine)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="font-medium">{row.boat_length}m</div>
+                        {row.pt ? (
+                          <div className="mt-1">
+                            <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 whitespace-nowrap">
+                              {row.pt.mooring_types.label} (€{row.pt.mooring_types.price})
+                            </span>
                           </div>
-                          <div className="text-xs text-gray-500">
-                            {maskData(r.fiscal_code, isMine)}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="font-medium">{r.boat_length}m</div>
-                          <div className="mt-1 flex flex-wrap gap-1">
-                            {r.request_preferred_types?.map(pt => (
-                              <span key={pt.type_id} className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 whitespace-nowrap">
-                                {pt.mooring_types.label} (€{pt.mooring_types.price})
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-1 text-sm font-medium">
-                            {getStatusIcon(r.status)}
-                            <span className="hidden sm:inline capitalize">{r.status.replace('_', ' ')}</span>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                        ) : (
+                          <div className="text-xs text-gray-500 italic">Genérico</div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1 text-sm font-medium">
+                          {getStatusIcon(row.status)}
+                          <span className="hidden sm:inline capitalize">{row.status.replace('_', ' ')}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                   {loading && (
                     <tr>
                       <td colSpan={4} className="text-center py-10 text-gray-500">Caricamento graduatoria...</td>
