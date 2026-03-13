@@ -175,10 +175,29 @@ function AdminDashboard() {
           <>
             {activeTab === 'requests' && (
           <div className="space-y-6">
-            <div className="flex justify-between items-end">
-              <div>
+            <div className="flex justify-between items-start gap-6">
+              <div className="flex-1">
                 <h2 className="text-3xl font-bold mb-2">Graduatoria Richiedenti</h2>
                 <p className="text-gray-400">Visualizzazione completa e non oscurata per l'amministrazione.</p>
+              </div>
+              
+              {/* Mooring Types Legend */}
+              <div className="hidden lg:block glass-card p-4 mt-0 min-w-[250px]">
+                <h3 className="text-xs font-bold text-gray-500 uppercase mb-3 flex items-center gap-2">
+                  <Ship size={14} className="text-blue-500" /> Legenda Tipologie
+                </h3>
+                <div className="space-y-2">
+                  {types.length === 0 ? (
+                    <p className="text-[10px] text-gray-500 italic">Nessuna tipologia definita</p>
+                  ) : (
+                    types.map(t => (
+                      <div key={t.id} className="flex justify-between items-center text-xs">
+                        <span className="text-gray-300 font-medium">{t.label} ({t.position})</span>
+                        <span className="text-blue-400 font-mono">{t.min_length}-{t.max_length}m</span>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
 
@@ -294,22 +313,30 @@ function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {types.map(t => (
-                <div key={t.id} className="glass-card relative group">
-                  <button 
-                    onClick={() => deleteType(t.id)}
-                    className="absolute top-4 right-4 text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                  <h3 className="text-xl font-bold mb-2">{t.label}</h3>
-                  <div className="text-sm font-medium text-blue-400 mb-1">{t.position}</div>
-                  <div className="flex justify-between items-end mt-4">
-                    <div className="text-gray-400 text-sm">Da {t.min_length}m a {t.max_length}m</div>
-                    <div className="text-xl font-bold text-white">€{t.price}</div>
-                  </div>
+              {types.length === 0 ? (
+                <div className="col-span-full py-20 text-center glass-card">
+                  <Ship className="mx-auto text-gray-700 mb-4" size={48} />
+                  <p className="text-gray-500">Non hai ancora definito alcuna tipologia di ormeggio.</p>
+                  <p className="text-sm text-gray-600 mt-2">Usa il modulo sopra per iniziare.</p>
                 </div>
-              ))}
+              ) : (
+                types.map(t => (
+                  <div key={t.id} className="glass-card relative group">
+                    <button 
+                      onClick={() => deleteType(t.id)}
+                      className="absolute top-4 right-4 text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    <h3 className="text-xl font-bold mb-2">{t.label}</h3>
+                    <div className="text-sm font-medium text-blue-400 mb-1">{t.position}</div>
+                    <div className="flex justify-between items-end mt-4">
+                      <div className="text-gray-400 text-sm">Da {t.min_length}m a {t.max_length}m</div>
+                      <div className="text-xl font-bold text-white">€{t.price}</div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
