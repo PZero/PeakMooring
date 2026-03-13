@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { Ship, List, Plus, Trash2, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { List, Plus, Trash2, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { initOneSignal } from '../lib/notifications';
 
 interface MooringRequest {
   id: string;
@@ -17,10 +18,10 @@ interface MooringRequest {
 }
 
 function UserDashboard({ session }: { session: any }) {
-  const [requests, setRequests] = useState<MooringRequest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
+  const [requests, setRequests] = React.useState<MooringRequest[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [showForm, setShowForm] = React.useState(false);
+  const [formData, setFormData] = React.useState({
     boat_length: '',
     fiscal_code: '',
     phone: ''
@@ -28,18 +29,22 @@ function UserDashboard({ session }: { session: any }) {
 
   const fetchRequests = async () => {
     setLoading(true);
-    // Fetch all requests for the waiting list
-    // We'll join with profiles to get names for masking
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('mooring_requests')
       .select('*, profiles(first_name, last_name)')
       .order('created_at', { ascending: true });
 
-    if (data) setRequests(data);
+    if (data) {
+      setRequests(data as unknown as MooringRequest[]);
+      const myRequests = data.filter((r: any) => r.user_id === session.user.id);
+      if (myRequests.length === 0) {
+        setShowForm(true);
+      }
+    }
     setLoading(false);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchRequests();
     initOneSignal();
   }, []);
@@ -172,7 +177,7 @@ function UserDashboard({ session }: { session: any }) {
           )}
 
           <div className="space-y-3">
-            {requests.filter(r => r.user_id === session.user.id).map(r => (
+            {requests.filter((r: MooringRequest) => r.user_id === session.user.id).map((r: MooringRequest) => (
               <div key={r.id} className="glass-card p-4 flex justify-between items-center border-l-4 border-blue-500">
                 <div>
                   <div className="flex items-center gap-2 mb-1">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import * as React from 'react';
 import { supabase } from './lib/supabase';
 import LandingPage from './components/LandingPage';
 import Auth from './components/Auth';
@@ -7,18 +7,25 @@ import AdminDashboard from './components/AdminDashboard';
 import { Session } from '@supabase/supabase-js';
 
 function App() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [showAuth, setShowAuth] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [session, setSession] = React.useState<Session | null>(null);
+  const [userRole, setUserRole] = React.useState<string | null>(null);
+  const [showAuth, setShowAuth] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
   const fetchRole = async (userId: string) => {
-    const { data } = await supabase.from('profiles').select('role').eq('id', userId).single();
-    if (data) setUserRole(data.role);
-    setLoading(false);
+    try {
+      const { data, error } = await supabase.from('profiles').select('role').eq('id', userId).single();
+      if (error) throw error;
+      if (data) setUserRole(data.role);
+    } catch (e) {
+      console.error('Error fetching role:', e);
+      setUserRole('user'); // Fallback to user role if profile is missing
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) fetchRole(session.user.id);

@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import * as React from 'react';
 import { supabase } from '../lib/supabase';
 import { Ship, Mail, Facebook, Chrome } from 'lucide-react';
 
 function Auth({ onBack }: { onBack: () => void }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null);
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [message, setMessage] = React.useState<{ type: 'error' | 'success', text: string } | null>(null);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();

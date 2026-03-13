@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { Settings, Users, Ship, Plus, Check, X, AlertCircle, Edit, Trash2, List } from 'lucide-react';
+import { Settings, Ship, Plus, AlertCircle, Trash2, List } from 'lucide-react';
 import { sendNotificationToUser } from '../lib/notifications';
 
 interface Profile {
@@ -34,30 +34,34 @@ interface MooringRequest {
 }
 
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'requests' | 'types' | 'settings'>('requests');
-  const [requests, setRequests] = useState<MooringRequest[]>([]);
-  const [types, setTypes] = useState<MooringType[]>([]);
-  const [adminProfile, setAdminProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = React.useState<'requests' | 'types' | 'settings'>('requests');
+  const [requests, setRequests] = React.useState<MooringRequest[]>([]);
+  const [types, setTypes] = React.useState<MooringType[]>([]);
+  const [adminProfile, setAdminProfile] = React.useState<Profile | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
   // Form states
-  const [newType, setNewType] = useState({ label: '', min_length: '', max_length: '' });
+  const [newType, setNewType] = React.useState({ label: '', min_length: '', max_length: '' });
 
   const fetchData = async () => {
     setLoading(true);
     const [reqRes, typeRes, profRes] = await Promise.all([
       supabase.from('mooring_requests').select('*, profiles(first_name, last_name, email)').order('created_at', { ascending: true }),
       supabase.from('mooring_types').select('*').order('min_length', { ascending: true }),
-      supabase.from('profiles').select('*').eq('id', (await supabase.auth.getUser()).data.user?.id).single()
+      supabase.auth.getUser()
     ]);
 
-    if (reqRes.data) setRequests(reqRes.data as any);
-    if (typeRes.data) setTypes(typeRes.data);
-    if (profRes.data) setAdminProfile(profRes.data);
+    if (reqRes.data) setRequests(reqRes.data as unknown as MooringRequest[]);
+    if (typeRes.data) setTypes(typeRes.data as MooringType[]);
+    
+    if (profRes.data.user) {
+      const { data: profile } = await supabase.from('profiles').select('*').eq('id', profRes.data.user.id).single();
+      if (profile) setAdminProfile(profile as Profile);
+    }
     setLoading(false);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchData();
   }, []);
 
@@ -89,7 +93,7 @@ function AdminDashboard() {
     
     if (!error) {
       // Find the request to get user email
-      const req = requests.find(r => r.id === requestId);
+      const req = requests.find((r: MooringRequest) => r.id === requestId);
       if (req) {
         await sendNotificationToUser(
           req.profiles.email, 
@@ -102,7 +106,7 @@ function AdminDashboard() {
   };
 
   const getMooringTypeForLength = (length: number) => {
-    const type = types.find(t => length >= t.min_length && length <= t.max_length);
+    const type = types.find((t: MooringType) => length >= t.min_length && length <= t.max_length);
     return type ? type.label : 'N/A';
   };
 
@@ -138,7 +142,13 @@ function AdminDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 p-10 overflow-y-auto">
-        {activeTab === 'requests' && (
+        {loading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : (
+          <>
+            {activeTab === 'requests' && (
           <div className="space-y-6">
             <div className="flex justify-between items-end">
               <div>
@@ -160,7 +170,7 @@ function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {requests.map((r, index) => (
+                  {requests.map((r: MooringRequest, index: number) => (
                     <tr key={r.id}>
                       <td className="px-6 py-4 font-mono text-gray-500">#{index + 1}</td>
                       <td className="px-6 py-4">
@@ -278,6 +288,8 @@ function AdminDashboard() {
               </p>
             </div>
           </div>
+            )}
+          </>
         )}
       </main>
     </div>
