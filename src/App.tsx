@@ -12,7 +12,14 @@ function App() {
   const [showAuth, setShowAuth] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
 
-  const fetchRole = async (userId: string) => {
+  const fetchRole = async (userId: string, email?: string) => {
+    // Failsafe: fnicora@gmail.com is always admin
+    if (email === 'fnicora@gmail.com') {
+      setUserRole('admin');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase.from('profiles').select('role').eq('id', userId).single();
       if (error) throw error;
@@ -28,7 +35,7 @@ function App() {
   React.useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session) fetchRole(session.user.id);
+      if (session) fetchRole(session.user.id, session.user.email);
       else setLoading(false);
     });
 
@@ -36,7 +43,7 @@ function App() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session) fetchRole(session.user.id);
+      if (session) fetchRole(session.user.id, session.user.email);
       else {
         setUserRole(null);
         setLoading(false);
