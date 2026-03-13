@@ -6,7 +6,7 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
       <div className="gradient-bg" />
       
       <header className="container">
-        <nav>
+        <nav className="nav-header">
           <div className="logo flex items-center gap-2">
             <Anchor className="text-blue-500" />
             <span>PeakMooring</span>
