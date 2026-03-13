@@ -230,8 +230,18 @@ function AdminDashboard() {
                         <div className="text-xs text-gray-500">{r.phone}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="font-medium text-blue-400">{r.boat_length}m</div>
-                        <div className="text-xs text-gray-500">{getMooringTypeForLength(r.boat_length)}</div>
+                        <div className="font-medium text-white">{r.boat_length}m</div>
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {r.request_preferred_types && r.request_preferred_types.length > 0 ? (
+                            r.request_preferred_types.map(pt => (
+                              <span key={pt.type_id} className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20">
+                                {pt.mooring_types.label}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-[10px] text-gray-600">Nessuna preferenza</span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${
