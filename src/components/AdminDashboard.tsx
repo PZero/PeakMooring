@@ -16,6 +16,8 @@ interface MooringType {
   label: string;
   min_length: number;
   max_length: number;
+  position: string;
+  price: number;
 }
 
 interface MooringRequest {
@@ -41,7 +43,13 @@ function AdminDashboard() {
   const [loading, setLoading] = React.useState(true);
 
   // Form states
-  const [newType, setNewType] = React.useState({ label: '', min_length: '', max_length: '' });
+  const [newType, setNewType] = React.useState({ 
+    label: '', 
+    min_length: '', 
+    max_length: '',
+    position: '',
+    price: ''
+  });
 
   const fetchData = async () => {
     setLoading(true);
@@ -71,11 +79,13 @@ function AdminDashboard() {
       { 
         label: newType.label, 
         min_length: parseFloat(newType.min_length), 
-        max_length: parseFloat(newType.max_length) 
+        max_length: parseFloat(newType.max_length),
+        position: newType.position,
+        price: parseFloat(newType.price)
       }
     ]);
     if (!error) {
-      setNewType({ label: '', min_length: '', max_length: '' });
+      setNewType({ label: '', min_length: '', max_length: '', position: '', price: '' });
       fetchData();
     }
   };
@@ -227,6 +237,24 @@ function AdminDashboard() {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm text-gray-400 mb-1">Posizione (es. Molo Nord)</label>
+                  <input 
+                    type="text" required
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+                    value={newType.position}
+                    onChange={e => setNewType({...newType, position: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-400 mb-1">Prezzo (€)</label>
+                  <input 
+                    type="number" step="0.01" required
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+                    value={newType.price}
+                    onChange={e => setNewType({...newType, price: e.target.value})}
+                  />
+                </div>
+                <div>
                   <label className="block text-sm text-gray-400 mb-1">Min (m)</label>
                   <input 
                     type="number" step="0.1" required
@@ -244,7 +272,7 @@ function AdminDashboard() {
                     onChange={e => setNewType({...newType, max_length: e.target.value})}
                   />
                 </div>
-                <div className="col-span-4 mt-2">
+                <div className="col-span-2 mt-2">
                   <button type="submit" className="btn btn-primary w-full py-3">Aggiungi Tipologia</button>
                 </div>
               </form>
@@ -260,7 +288,11 @@ function AdminDashboard() {
                     <Trash2 size={18} />
                   </button>
                   <h3 className="text-xl font-bold mb-2">{t.label}</h3>
-                  <p className="text-gray-400">Da {t.min_length}m a {t.max_length}m</p>
+                  <div className="text-sm font-medium text-blue-400 mb-1">{t.position}</div>
+                  <div className="flex justify-between items-end mt-4">
+                    <div className="text-gray-400 text-sm">Da {t.min_length}m a {t.max_length}m</div>
+                    <div className="text-xl font-bold text-white">€{t.price}</div>
+                  </div>
                 </div>
               ))}
             </div>
