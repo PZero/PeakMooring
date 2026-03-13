@@ -3,6 +3,15 @@ import { supabase } from '../lib/supabase';
 import { List, Plus, Trash2, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { initOneSignal } from '../lib/notifications';
 
+interface MooringType {
+  id: number;
+  label: string;
+  min_length: number;
+  max_length: number;
+  position: string;
+  price: number;
+}
+
 interface MooringRequest {
   id: string;
   user_id: string;
@@ -15,6 +24,10 @@ interface MooringRequest {
     first_name: string;
     last_name: string;
   };
+  request_preferred_types?: {
+    type_id: number;
+    mooring_types: MooringType;
+  }[];
 }
 
 function UserDashboard({ session }: { session: any }) {
@@ -26,12 +39,15 @@ function UserDashboard({ session }: { session: any }) {
     fiscal_code: '',
     phone: ''
   });
+  const [step, setStep] = React.useState(1);
+  const [compatibleTypes, setCompatibleTypes] = React.useState<MooringType[]>([]);
+  const [selectedTypes, setSelectedTypes] = React.useState<number[]>([]);
 
   const fetchRequests = async () => {
     setLoading(true);
     const { data } = await supabase
       .from('mooring_requests')
-      .select('*, profiles(first_name, last_name)')
+      .select('*, profiles(first_name, last_name), request_preferred_types(type_id, mooring_types(*))')
       .order('created_at', { ascending: true });
 
     if (data) {
@@ -51,21 +67,82 @@ function UserDashboard({ session }: { session: any }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { error } = await supabase.from('mooring_requests').insert([
-      {
-        user_id: session.user.id,
-        boat_length: parseFloat(formData.boat_length),
-        fiscal_code: formData.fiscal_code,
-        phone: formData.phone,
-        status: 'waiting'
-      }
-    ]);
+    setLoading(true);
+    
+    // 1. Find compatible types
+    const length = parseFloat(formData.boat_length);
+    const { data: types, error: typeError } = await supabase
+      .from('mooring_types')
+      .select('*')
+      .lte('min_length', length)
+      .gte('max_length', length);
 
-    if (!error) {
+    if (typeError) {
+      alert('Errore nel recupero delle tipologie: ' + typeError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (!types || types.length === 0) {
+      alert('Spiacenti, non abbiamo posti barca compatibili con questa lunghezza (' + length + 'm).');
+      setLoading(false);
+      return;
+    }
+
+    if (types.length === 1) {
+      // Auto-submit if only one type matches
+      await performFinalSubmit([types[0].id]);
+    } else {
+      // Show selection step
+      setCompatibleTypes(types as MooringType[]);
+      setSelectedTypes([]);
+      setStep(2);
+      setLoading(false);
+    }
+  };
+
+  const performFinalSubmit = async (typeIds: number[]) => {
+    setLoading(true);
+    // 1. Insert Request
+    const { data: reqData, error: reqError } = await supabase
+      .from('mooring_requests')
+      .insert([
+        {
+          user_id: session.user.id,
+          boat_length: parseFloat(formData.boat_length),
+          fiscal_code: formData.fiscal_code,
+          phone: formData.phone,
+          status: 'waiting'
+        }
+      ])
+      .select()
+      .single();
+
+    if (reqError) {
+      alert('Errore nell\'invio della richiesta: ' + reqError.message);
+      setLoading(false);
+      return;
+    }
+
+    // 2. Insert Junction records
+    const junctionData = typeIds.map(typeId => ({
+      request_id: reqData.id,
+      type_id: typeId
+    }));
+
+    const { error: juncError } = await supabase
+      .from('request_preferred_types')
+      .insert(junctionData);
+
+    if (juncError) {
+      alert('Errore nel salvataggio delle preferenze: ' + juncError.message);
+    } else {
       setShowForm(false);
+      setStep(1);
       setFormData({ boat_length: '', fiscal_code: '', phone: '' });
       fetchRequests();
     }
+    setLoading(false);
   };
 
   const deleteRequest = async (id: string) => {
@@ -137,42 +214,98 @@ function UserDashboard({ session }: { session: any }) {
 
           {showForm && (
             <div className="glass-card p-6 mb-6">
-              <h3 className="text-lg font-bold mb-4">Dati Imbarcazione</h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-1">Lunghezza Barca (m)</label>
-                    <input 
-                      type="number" step="0.1" required
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
-                      value={formData.boat_length}
-                      onChange={e => setFormData({...formData, boat_length: e.target.value})}
-                    />
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold">
+                  {step === 1 ? '1. Dati Richiesta' : '2. Selezione Ormeggi Compatibili'}
+                </h3>
+                <div className="flex gap-1">
+                  <div className={`h-1.5 w-10 rounded-full ${step >= 1 ? 'bg-blue-500' : 'bg-gray-700'}`} />
+                  <div className={`h-1.5 w-10 rounded-full ${step >= 2 ? 'bg-blue-500' : 'bg-gray-700'}`} />
+                </div>
+              </div>
+
+              {step === 1 ? (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Lunghezza Barca (m)</label>
+                      <input 
+                        type="number" step="0.1" required
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-blue-500 transition-colors"
+                        value={formData.boat_length}
+                        onChange={e => setFormData({...formData, boat_length: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Codice Fiscale</label>
+                      <input 
+                        type="text" required
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-blue-500 transition-colors"
+                        value={formData.fiscal_code}
+                        onChange={e => setFormData({...formData, fiscal_code: e.target.value.toUpperCase()})}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm text-gray-400 mb-1">Numero di Telefono</label>
+                      <input 
+                        type="tel" required
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-blue-500 transition-colors"
+                        value={formData.phone}
+                        onChange={e => setFormData({...formData, phone: e.target.value})}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-1">Codice Fiscale</label>
-                    <input 
-                      type="text" required
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
-                      value={formData.fiscal_code}
-                      onChange={e => setFormData({...formData, fiscal_code: e.target.value.toUpperCase()})}
-                    />
+                  <div className="flex gap-2 pt-4">
+                    <button type="submit" disabled={loading} className="btn btn-primary flex-1 py-4">
+                      {loading ? 'Verifica compatibilità...' : 'Verifica Posti Disponibili'}
+                    </button>
+                    <button type="button" onClick={() => setShowForm(false)} className="btn btn-outline py-4">Annulla</button>
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm text-gray-400 mb-1">Numero di Telefono</label>
-                    <input 
-                      type="tel" required
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
-                      value={formData.phone}
-                      onChange={e => setFormData({...formData, phone: e.target.value})}
-                    />
+                </form>
+              ) : (
+                <div className="space-y-6">
+                  <p className="text-gray-400 text-sm">Abbiamo trovato più opzioni compatibili con la tua barca ({formData.boat_length}m). Seleziona i tipi di ormeggio per cui desideri metterti in graduatoria:</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {compatibleTypes.map(t => {
+                      const isSelected = selectedTypes.includes(t.id);
+                      return (
+                        <div 
+                          key={t.id}
+                          onClick={() => {
+                            if (isSelected) setSelectedTypes(selectedTypes.filter(id => id !== t.id));
+                            else setSelectedTypes([...selectedTypes, t.id]);
+                          }}
+                          className={`cursor-pointer glass-card p-4 transition-all hover:translate-y-[-2px] ${isSelected ? 'border-blue-500 bg-blue-500/10' : 'hover:border-white/20'}`}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-bold text-lg">{t.label}</h4>
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-600'}`}>
+                              {isSelected && <CheckCircle size={12} className="text-white" />}
+                            </div>
+                          </div>
+                          <div className="text-blue-400 text-sm font-medium mb-1">{t.position}</div>
+                          <div className="flex justify-between items-end mt-4">
+                            <div className="text-gray-500 text-xs">Capacità: {t.min_length}-{t.max_length}m</div>
+                            <div className="text-lg font-bold">€{t.price}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex gap-2 pt-4 border-t border-white/5">
+                    <button 
+                      onClick={() => performFinalSubmit(selectedTypes)} 
+                      disabled={selectedTypes.length === 0 || loading}
+                      className="btn btn-primary flex-1 py-4 disabled:opacity-50"
+                    >
+                      {loading ? 'Invio...' : 'Conferma Inserimento in Graduatoria'}
+                    </button>
+                    <button type="button" onClick={() => setStep(1)} className="btn btn-outline py-4">Indietro</button>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <button type="submit" className="btn btn-primary flex-1">Invia Richiesta</button>
-                  <button type="button" onClick={() => setShowForm(false)} className="btn btn-outline">Annulla</button>
-                </div>
-              </form>
+              )}
             </div>
           )}
 
@@ -185,6 +318,13 @@ function UserDashboard({ session }: { session: any }) {
                     <span className="font-bold capitalize">{r.status.replace('_', ' ')}</span>
                   </div>
                   <p className="text-sm text-gray-400">{r.boat_length} metri • {r.fiscal_code}</p>
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {r.request_preferred_types?.map(pt => (
+                      <span key={pt.type_id} className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20">
+                        {pt.mooring_types.label} ({pt.mooring_types.position})
+                      </span>
+                    ))}
+                  </div>
                   
                   {r.status === 'pending_confirmation' && (
                     <div className="mt-4 flex gap-2">

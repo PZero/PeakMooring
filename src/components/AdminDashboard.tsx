@@ -33,6 +33,10 @@ interface MooringRequest {
     last_name: string;
     email: string;
   };
+  request_preferred_types?: {
+    type_id: number;
+    mooring_types: MooringType;
+  }[];
 }
 
 function AdminDashboard() {
@@ -55,7 +59,7 @@ function AdminDashboard() {
     try {
       setLoading(true);
       const [reqRes, typeRes, profRes] = await Promise.all([
-        supabase.from('mooring_requests').select('*, profiles(first_name, last_name, email)').order('created_at', { ascending: true }),
+        supabase.from('mooring_requests').select('*, profiles(first_name, last_name, email), request_preferred_types(type_id, mooring_types(*))').order('created_at', { ascending: true }),
         supabase.from('mooring_types').select('*').order('min_length', { ascending: true }),
         supabase.auth.getUser()
       ]);
