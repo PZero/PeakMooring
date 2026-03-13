@@ -385,7 +385,16 @@ function UserDashboard({ session }: { session: any }) {
                             {maskData(r.fiscal_code, isMine)}
                           </div>
                         </td>
-                        <td className="px-6 py-4">{r.boat_length}m</td>
+                        <td className="px-6 py-4">
+                          <div className="font-medium">{r.boat_length}m</div>
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {r.request_preferred_types?.map(pt => (
+                              <span key={pt.type_id} className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 whitespace-nowrap">
+                                {pt.mooring_types.label} (€{pt.mooring_types.price})
+                              </span>
+                            ))}
+                          </div>
+                        </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-1 text-sm font-medium">
                             {getStatusIcon(r.status)}

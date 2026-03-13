@@ -134,10 +134,6 @@ function AdminDashboard() {
     }
   };
 
-  const getMooringTypeForLength = (length: number) => {
-    const type = types.find((t: MooringType) => length >= t.min_length && length <= t.max_length);
-    return type ? type.label : 'N/A';
-  };
 
   return (
     <div className="min-h-screen bg-gray-950 flex">
