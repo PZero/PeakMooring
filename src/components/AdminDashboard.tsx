@@ -52,21 +52,30 @@ function AdminDashboard() {
   });
 
   const fetchData = async () => {
-    setLoading(true);
-    const [reqRes, typeRes, profRes] = await Promise.all([
-      supabase.from('mooring_requests').select('*, profiles(first_name, last_name, email)').order('created_at', { ascending: true }),
-      supabase.from('mooring_types').select('*').order('min_length', { ascending: true }),
-      supabase.auth.getUser()
-    ]);
+    try {
+      setLoading(true);
+      const [reqRes, typeRes, profRes] = await Promise.all([
+        supabase.from('mooring_requests').select('*, profiles(first_name, last_name, email)').order('created_at', { ascending: true }),
+        supabase.from('mooring_types').select('*').order('min_length', { ascending: true }),
+        supabase.auth.getUser()
+      ]);
 
-    if (reqRes.data) setRequests(reqRes.data as unknown as MooringRequest[]);
-    if (typeRes.data) setTypes(typeRes.data as MooringType[]);
-    
-    if (profRes.data.user) {
-      const { data: profile } = await supabase.from('profiles').select('*').eq('id', profRes.data.user.id).single();
-      if (profile) setAdminProfile(profile as Profile);
+      if (reqRes.error) console.error('Error fetching requests:', reqRes.error);
+      if (typeRes.error) console.error('Error fetching types:', typeRes.error);
+
+      if (reqRes.data) setRequests(reqRes.data as unknown as MooringRequest[]);
+      if (typeRes.data) setTypes(typeRes.data as MooringType[]);
+      
+      if (profRes.data.user) {
+        const { data: profile, error: profError } = await supabase.from('profiles').select('*').eq('id', profRes.data.user.id).single();
+        if (profError) console.error('Error fetching admin profile:', profError);
+        if (profile) setAdminProfile(profile as Profile);
+      }
+    } catch (err) {
+      console.error('Unexpected error in fetchData:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   React.useEffect(() => {
@@ -75,6 +84,7 @@ function AdminDashboard() {
 
   const handleAddType = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const { error } = await supabase.from('mooring_types').insert([
       { 
         label: newType.label, 
@@ -84,9 +94,14 @@ function AdminDashboard() {
         price: parseFloat(newType.price)
       }
     ]);
-    if (!error) {
+    
+    if (error) {
+      console.error('Error adding type:', error);
+      alert('Errore durante l\'aggiunta: ' + error.message);
+      setLoading(false);
+    } else {
       setNewType({ label: '', min_length: '', max_length: '', position: '', price: '' });
-      fetchData();
+      await fetchData();
     }
   };
 
