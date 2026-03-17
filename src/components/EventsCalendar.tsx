@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { Calendar, Plus, LogOut, Settings, Trash2, Edit2, ExternalLink, AlignLeft, Clock, RotateCcw, User } from 'lucide-react';
+import { Calendar, Plus, LogOut, Settings, Trash2, Edit2, ExternalLink, AlignLeft, Clock, RotateCcw } from 'lucide-react';
 
 import EventForm from './EventForm';
 import ProfileModal from './ProfileModal';
@@ -155,12 +155,11 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
               <p className="text-blue-300/60 font-medium uppercase tracking-widest text-xs">Open Water Swimming Season</p>
             </div>
           </div>
-          
           <div className="flex items-center gap-4">
             {isAdmin && onNavigateToAdmin && (
               <button onClick={onNavigateToAdmin} className="btn btn-outline flex items-center gap-2 py-3 px-5">
                 <Settings size={18} />
-                <span className="hidden sm:inline">Admin</span>
+                <span className="hidden sm:inline font-bold">Admin</span>
               </button>
             )}
             <button 
@@ -168,33 +167,37 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
               className="btn btn-primary flex items-center gap-2 py-3 px-6 shadow-xl shadow-blue-500/20"
             >
               <Plus size={20} />
-              Nuova Gara
-            </button>
-            
-            <div className="h-8 w-px bg-white/10 mx-1 hidden sm:block" />
-
-            <button onClick={() => setShowLogoutConfirm(true)} className="btn btn-outline p-3 hover:bg-red-500/10 hover:text-red-400" title="Esci">
-              <LogOut size={20} />
+              <span className="font-bold">Nuova Gara</span>
             </button>
           </div>
         </div>
 
-        {/* User Info Bar (Secondary Row) */}
-        <div className="flex items-center justify-between glass-card px-6 py-3 border-white/5 !mt-2">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xs">
-              {userProfile?.first_name ? userProfile.first_name[0].toUpperCase() : <User size={14} />}
+        {/* User Welcome Card (The First Card) */}
+        <div className="glass-card p-6 flex flex-row items-center justify-between border-blue-500/20 shadow-xl shadow-blue-500/5 !mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="flex items-center gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-blue-400 border border-white/10 shadow-inner overflow-hidden group">
+              <img src="/logo.png" alt="Avatar" className="w-full h-full object-cover p-2" />
             </div>
-            <div className="text-sm font-medium text-gray-300">
-              Bentornato, <span className="text-white font-bold">{userProfile?.first_name || 'Atleta'}</span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+              <div className="text-xl font-medium text-gray-400">
+                Bentornato, <span className="text-white font-black tracking-tight">{userProfile?.first_name || 'Atleta'}</span>
+              </div>
+              <button 
+                onClick={() => setShowProfile(true)}
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-blue-400 hover:bg-white/10 transition-all border border-transparent hover:border-blue-500/20 sm:ml-2 active:scale-95"
+                title="Modifica Nome"
+              >
+                <Edit2 size={20} />
+              </button>
             </div>
           </div>
+          
           <button 
-            onClick={() => setShowProfile(true)}
-            className="text-xs font-black uppercase tracking-widest text-blue-400 hover:text-blue-300 flex items-center gap-2 bg-blue-500/10 px-3 py-1.5 rounded-lg transition-all"
+            onClick={() => setShowLogoutConfirm(true)} 
+            className="w-14 h-14 flex items-center justify-center rounded-2xl bg-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all border border-red-500/10 active:scale-95 shadow-lg shadow-red-500/5"
+            title="Esci dalla sessione"
           >
-            <Settings size={14} />
-            Modifica Nome
+            <LogOut size={28} />
           </button>
         </div>
 
@@ -353,14 +356,14 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
           onClose={() => setShowProfile(false)}
           onUpdated={() => {
             checkUser();
-            fetchEvents(); // Refresh to update "Ultima Modifica" names
+            fetchEvents();
           }}
         />
       )}
 
       {showLogoutConfirm && (
-        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="glass-card w-full max-w-sm p-8 animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="glass-card w-full max-w-sm p-8 animate-in zoom-in-95 duration-200 border-red-500/20 shadow-2xl shadow-red-500/10">
             <h3 className="text-xl font-bold text-white mb-2">Conferma Logout</h3>
             <p className="text-gray-400 mb-8">Sei sicuro di voler uscire dalla sessione?</p>
             
