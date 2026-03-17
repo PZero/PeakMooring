@@ -252,9 +252,9 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                       ) : (
                         activeEvents.map(event => {
                           const rowBgColor = 
-                            event.organization === 'FIN' ? 'bg-[#e0f7ff] hover:bg-[#d0f0ff]' :
-                            event.organization === 'UISP' ? 'bg-[#e7f9ee] hover:bg-[#dbf3e4]' :
-                            'bg-[#fff7e6] hover:bg-[#ffefcc]';
+                            event.organization === 'FIN' ? 'bg-sky-100 hover:bg-sky-200' :
+                            event.organization === 'UISP' ? 'bg-emerald-100 hover:bg-emerald-200' :
+                            'bg-amber-100 hover:bg-amber-200';
                           
                           return (
                             <tr key={event.id} className={`group transition-colors`}>
@@ -341,9 +341,9 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                       <tbody className="divide-y divide-white/5 text-gray-500">
                         {cancelledEvents.map(event => {
                           const rowBgColor = 
-                            event.organization === 'FIN' ? 'bg-[#f0faff]' :
-                            event.organization === 'UISP' ? 'bg-[#f0fdf4]' :
-                            'bg-[#fffbeb]';
+                            event.organization === 'FIN' ? 'bg-sky-50' :
+                            event.organization === 'UISP' ? 'bg-emerald-50' :
+                            'bg-amber-50';
 
                           return (
                             <tr key={event.id} className={`italic line-through decoration-gray-400 transition-colors`}>
