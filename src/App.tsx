@@ -27,12 +27,16 @@ function App() {
     }
 
     try {
-      const { data, error } = await supabase.from('profiles').select('role, status').eq('id', userId).single();
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_admin, status')
+        .eq('id', userId)
+        .single();
       
       if (error) throw error;
       
       if (data) {
-        setUserRole(data.role);
+        setUserRole(data.is_admin ? 'admin' : 'user');
         setUserStatus(data.status);
       }
     } catch (e) {

@@ -4,10 +4,11 @@ import { Users, CheckCircle, XCircle, Clock, LogOut, Calendar } from 'lucide-rea
 
 interface Profile {
   id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
   status: 'pending' | 'approved' | 'rejected';
+  is_admin: boolean;
   created_at: string;
 }
 
@@ -30,6 +31,34 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
 
   React.useEffect(() => {
     fetchUsers();
+
+    // Set up Realtime subscription
+    const channel = supabase
+      .channel('admin_profiles_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles'
+        },
+        (payload) => {
+          console.log('Change received!', payload);
+          // Instead of fetching everything again, we can intelligently update the local state
+          if (payload.eventType === 'INSERT') {
+            setUsers(prev => [payload.new as Profile, ...prev]);
+          } else if (payload.eventType === 'UPDATE') {
+            setUsers(prev => prev.map(u => u.id === payload.new.id ? { ...u, ...(payload.new as Profile) } : u));
+          } else if (payload.eventType === 'DELETE') {
+            setUsers(prev => prev.filter(u => u.id === payload.old.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleStatusChange = async (userId: string, newStatus: 'approved' | 'rejected') => {
@@ -38,12 +67,24 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
       .update({ status: newStatus })
       .eq('id', userId);
       
-    if (!error) {
-      setUsers(users.map(u => u.id === userId ? { ...u, status: newStatus } : u));
-    } else {
+    if (error) {
       console.error("Error updating status:", error);
       alert("Errore durante l'aggiornamento dello stato");
     }
+    // State will be updated via Realtime channel
+  };
+
+  const handleAdminToggle = async (userId: string, isAdmin: boolean) => {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ is_admin: isAdmin })
+      .eq('id', userId);
+      
+    if (error) {
+      console.error("Error updating admin status:", error);
+      alert("Errore durante l'aggiornamento dei permessi admin");
+    }
+    // State will be updated via Realtime channel
   };
 
   const handleLogout = async () => {
@@ -110,7 +151,7 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
                   <div key={user.id} className="glass-card p-6 border-l-4 border-l-yellow-500">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="font-semibold text-white text-lg">{user.first_name} {user.last_name}</h3>
+                        <h3 className="font-semibold text-white text-lg">{user.first_name} {user.last_name || '(Cognome mancante)'}</h3>
                         <p className="text-gray-400 text-sm">{user.email}</p>
                       </div>
                       <span className="text-xs text-gray-500">
@@ -152,12 +193,25 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
                 ) : (
                   <ul className="divide-y divide-white/10">
                     {otherUsers.map(user => (
-                      <li key={user.id} className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
-                        <div>
-                          <p className="font-medium text-white">{user.first_name} {user.last_name}</p>
-                          <p className="text-sm text-gray-400">{user.email}</p>
+                      <li key={user.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-white truncate">{user.first_name} {user.last_name}</p>
+                          <p className="text-sm text-gray-400 truncate">{user.email}</p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3 shrink-0">
+                          {/* Admin Delegation Toggle */}
+                          {user.status === 'approved' && (
+                            <label className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
+                              <input 
+                                type="checkbox" 
+                                checked={user.is_admin}
+                                onChange={(e) => handleAdminToggle(user.id, e.target.checked)}
+                                className="w-4 h-4 rounded border-white/10 bg-gray-900 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-950"
+                              />
+                              <span className="text-xs font-semibold text-gray-300">Admin</span>
+                            </label>
+                          )}
+
                           <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
                             user.status === 'approved' 
                               ? 'bg-green-500/10 text-green-400 border-green-500/20' 

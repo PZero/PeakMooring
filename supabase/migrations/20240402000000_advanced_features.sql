@@ -56,7 +56,9 @@ USING (
   OR auth.jwt()->>'email' = 'fnicora@gmail.com'
 );
 
--- Ensure the main admin account is correctly set up with the new flags
 UPDATE public.profiles 
 SET is_admin = true, status = 'approved'
 WHERE id IN (SELECT id FROM auth.users WHERE email = 'fnicora@gmail.com');
+
+-- Enable Realtime for the profiles table
+ALTER PUBLICATION supabase_realtime ADD TABLE profiles;
