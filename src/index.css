@@ -185,6 +185,8 @@ body {
 .h-10 { height: 2.5rem; }
 .rounded-full { border-radius: 9999px; }
 .bg-blue-600 { background-color: #2563eb; }
+.bg-slate-100 { background-color: #f1f5f9; }
+.bg-slate-50 { background-color: #f8fafc; }
 .text-blue-400 { color: #2563eb; }
 .text-blue-500 { color: #1d4ed8; }
 .text-gray-300 { color: #475569; }
@@ -290,6 +292,15 @@ body {
 @keyframes zoomIn {
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+@keyframes rotatePhone {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  75% { transform: rotate(90deg); }
+  100% { transform: rotate(0deg); }
+}
+.animate-rotate-phone {
+  animation: rotatePhone 3s ease-in-out infinite;
 }
 
 /* Shadow Utilities */

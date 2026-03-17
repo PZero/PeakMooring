@@ -209,38 +209,46 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                   Gare Attive ({activeEvents.length})
                 </h2>
-                <div className="md:hidden text-[10px] text-gray-500 uppercase tracking-widest flex items-center gap-1 animate-pulse">
-                  <span>Scorri</span> <span>→</span>
+                <div className="md:hidden flex items-center gap-3">
+                  <div className="flex flex-col items-end">
+                    <div className="text-[10px] text-gray-500 uppercase tracking-widest flex items-center gap-1 animate-pulse">
+                      <span>Scorri</span> <span>→</span>
+                    </div>
+                    <div className="text-[8px] text-blue-500 font-bold uppercase tracking-tight flex items-center gap-1">
+                      <Smartphone size={10} className="animate-rotate-phone" />
+                      <span>Ottimizzato Landscape</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className={`glass-card !p-0 overflow-hidden border-white/5 shadow-2xl relative transition-all duration-300 ${isFullscreen ? 'fullscreen-landscape' : ''}`}>
                 
                 {/* Header specifically for fullscreen mode to allow exit or just show title */}
                 {isFullscreen && (
-                  <div className="flex items-center justify-between p-4 border-b border-white/10 bg-gray-900">
-                    <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                  <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white">
+                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-3">
                       <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                       Gare Attive ({activeEvents.length})
                     </h2>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <Smartphone size={16} /> <span className="uppercase tracking-widest text-[10px]">Ruota per uscire</span>
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                      <Smartphone size={16} className="animate-rotate-phone" /> <span className="uppercase tracking-widest text-[10px] font-bold">Ruota per uscire</span>
                     </div>
                   </div>
                 )}
 
                 {/* Scroll hint overlay */}
-                {!isFullscreen && <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-900 to-transparent pointer-events-none md:hidden z-10" />}
+                {!isFullscreen && <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none md:hidden z-10" />}
                 
                 <div className="overflow-x-auto pb-2 custom-scrollbar">
                   <table className="w-full text-left border-collapse table-nowrap">
                     <thead>
-                      <tr className="bg-white/5 border-b border-white/10">
-                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Gara / Org</th>
-                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Data Gara</th>
-                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Scadenza Is.</th>
-                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Distanze / Info</th>
-                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Modificato Da</th>
-                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Azioni</th>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-slate-100 last:border-r-0">Gara / Org</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-slate-100 last:border-r-0">Data Gara</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-slate-100 last:border-r-0">Scadenza Is.</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-slate-100 last:border-r-0">Distanze / Info</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-slate-100 last:border-r-0">Modificato Da</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest text-right">Azioni</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
