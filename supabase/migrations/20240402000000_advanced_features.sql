@@ -35,6 +35,7 @@ FOR ALL
 TO authenticated 
 USING (
   (SELECT is_admin FROM profiles WHERE id = auth.uid() LIMIT 1) = true
+  OR auth.jwt()->>'email' = 'fnicora@gmail.com'
 );
 
 -- Profiles policies: update Admin policy to use is_admin
@@ -44,4 +45,10 @@ ON profiles
 FOR UPDATE
 USING (
   (SELECT is_admin FROM profiles WHERE id = auth.uid() LIMIT 1) = true
+  OR auth.jwt()->>'email' = 'fnicora@gmail.com'
 );
+
+-- Ensure the main admin account is correctly set up with the new flags
+UPDATE public.profiles 
+SET is_admin = true, status = 'approved'
+WHERE id IN (SELECT id FROM auth.users WHERE email = 'fnicora@gmail.com');
