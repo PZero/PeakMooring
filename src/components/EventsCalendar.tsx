@@ -237,23 +237,26 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="px-2 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Gara</th>
+                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Gara</th>
+                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Org.</th>
                         <th className="px-1.5 md:px-5 py-3 md:py-4 text-[10px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 whitespace-nowrap">Data</th>
                         <th className="px-1.5 md:px-5 py-3 md:py-4 text-[10px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 whitespace-nowrap">Scadenza Is.</th>
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell">Distanze / Info</th>
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell">Modificato Da</th>
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest text-right hidden sm:table-cell">Azioni</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Distanze / Info</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Modificato Da</th>
+                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 text-right">Azioni</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
                       {activeEvents.length === 0 ? (
-                        <tr><td colSpan={3} className="px-4 py-12 text-center text-gray-500 italic sm:col-span-6">Nessuna gara attiva</td></tr>
+                        <tr><td colSpan={4} className="px-4 py-12 text-center text-gray-500 italic sm:col-span-7 landscape:col-span-7">Nessuna gara attiva</td></tr>
                       ) : (
                         activeEvents.map(event => (
                           <tr key={event.id} className="group hover:bg-white/[0.02] transition-colors">
                             <td className="px-1.5 md:px-4 py-3 md:py-4 border-r border-white/5 last:border-r-0">
                               <div className="font-bold text-white group-hover:text-blue-400 text-[12px] md:text-sm whitespace-normal break-words">{event.name}</div>
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-black border mt-1 hidden sm:block w-max ${
+                            </td>
+                            <td className="px-1.5 md:px-4 py-3 md:py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell landscape:table-cell">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-black border w-max ${
                                 event.organization === 'FIN' ? 'bg-blue-500/20 text-blue-400 border-blue-500/20' :
                                 event.organization === 'UISP' ? 'bg-orange-500/20 text-orange-400 border-orange-500/20' :
                                 'bg-purple-500/20 text-purple-400 border-purple-500/20'
@@ -273,7 +276,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                                 {formatDateShort(event.registration_deadline)}
                               </div>
                             </td>
-                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell">
+                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell landscape:table-cell">
                               <div className="space-y-1.5 max-w-[200px] whitespace-normal">
                                 {event.distances && <div className="text-xs text-gray-300 leading-tight">{event.distances}</div>}
                                 <div className="flex gap-3">
@@ -289,14 +292,14 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                                 </div>
                               </div>
                             </td>
-                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell">
+                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell landscape:table-cell">
                               <div className="text-[10px] text-gray-500">
                                 <div>{formatDateShort(event.updated_at)}</div>
                                 <div className="text-blue-400 font-bold truncate max-w-[100px]">{event.updater_email}</div>
                               </div>
                             </td>
-                            <td className="px-5 py-4 text-right hidden sm:table-cell">
-                              <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                            <td className="px-1.5 md:px-5 py-3 md:py-4 text-right border-l border-white/5">
+                              <div className="flex justify-end gap-1 opacity-100 transition-opacity">
                                 <button onClick={() => { setEditingEvent(event); setShowForm(true); }} className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white"><Edit2 size={16} /></button>
                                 <button onClick={() => { if(confirm('Annullare?')) handleCancelEvent(event.id); }} className="p-1.5 hover:bg-red-500/10 rounded-lg text-red-500/60 hover:text-red-400"><Trash2 size={16} /></button>
                               </div>
@@ -322,17 +325,21 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-white/5 border-b border-white/10">
-                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0 whitespace-nowrap">Gara</th>
-                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0 whitespace-nowrap">Data</th>
-                          <th className="px-6 py-3 text-xs font-bold text-gray-600 uppercase tracking-widest text-right hidden sm:table-cell">Azioni</th>
+                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0">Gara</th>
+                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Org.</th>
+                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0">Data</th>
+                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0 text-right">Azioni</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5 text-gray-500">
                         {cancelledEvents.map(event => (
                           <tr key={event.id} className="italic line-through decoration-gray-700">
                             <td className="px-1.5 md:px-4 py-4 border-r border-white/5 last:border-r-0 text-[12px] md:text-sm whitespace-normal break-words">{event.name}</td>
+                            <td className="px-1.5 md:px-4 py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell landscape:table-cell">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-black border bg-gray-500/10 text-gray-500 border-gray-500/20">{event.organization}</span>
+                            </td>
                             <td className="px-1.5 md:px-4 py-4 border-r border-white/5 last:border-r-0 text-[12px] md:text-sm whitespace-nowrap">{new Date(event.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}</td>
-                            <td className="px-6 py-4 text-right hidden sm:table-cell">
+                            <td className="px-1.5 md:px-6 py-4 text-right border-l border-white/5">
                               <div className="flex items-center justify-end gap-3">
                                 <button onClick={() => handleRestoreEvent(event.id)} className="text-blue-500/50 hover:text-blue-400 no-underline italic flex items-center gap-1">
                                   <RotateCcw size={14} /> Ripristina
@@ -362,20 +369,17 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
         className="fixed bottom-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        <div className="max-w-7xl mx-auto grid grid-cols-3 items-center p-1 md:px-8 md:py-2">
-          {/* Column 1: Logout (Far Left) */}
-          <div className="flex justify-start">
-            <button 
-              onClick={() => setShowLogoutConfirm(true)} 
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500 hover:text-red-400 hover:bg-red-500/20 transition-all active:scale-95 shrink-0 ml-1"
-              title="Esci dalla sessione"
-            >
-              <LogOut size={18} />
-            </button>
-          </div>
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-4 p-1 md:px-8 md:py-2">
+          {/* Logout & Profile Row */}
+          <button 
+            onClick={() => setShowLogoutConfirm(true)} 
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500 hover:text-red-400 hover:bg-red-500/20 transition-all active:scale-95 shrink-0"
+            title="Esci dalla sessione"
+          >
+            <LogOut size={18} />
+          </button>
 
-          {/* Column 2: Profile (Center) */}
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white border border-white/10 shadow-inner shrink-0">
               <span className="text-[12px] font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
             </div>
@@ -390,9 +394,6 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
               </button>
             </div>
           </div>
-
-          {/* Column 3: Spacer */}
-          <div></div>
         </div>
       </div>
     </div>
