@@ -1,28 +1,44 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { Ship, Mail, Facebook, Chrome, Lock } from 'lucide-react';
+import { Waves, Mail, Facebook, Chrome, Lock, User } from 'lucide-react';
 
 function Auth({ onBack }: { onBack: () => void }) {
+  const [isLogin, setIsLogin] = React.useState(true);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [firstName, setFirstName] = React.useState('');
+  const [lastName, setLastName] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState<{ type: 'error' | 'success', text: string } | null>(null);
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setMessage({ type: 'error', text: error.message });
-    setLoading(false);
-  };
 
-  const handleEmailSignUp = async () => {
-    setLoading(true);
-    setMessage(null);
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) setMessage({ type: 'error', text: error.message });
-    else setMessage({ type: 'success', text: 'Controlla la tua email per confermare l\'iscrizione!' });
+    if (isLogin) {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) setMessage({ type: 'error', text: error.message });
+    } else {
+      if (!firstName || !lastName) {
+        setMessage({ type: 'error', text: 'Nome e cognome sono obbligatori' });
+        setLoading(false);
+        return;
+      }
+      const { error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName
+          }
+        }
+      });
+      if (error) setMessage({ type: 'error', text: error.message });
+      else setMessage({ type: 'success', text: 'Registrazione completata! Puoi effettuare il login.' });
+    }
+    
     setLoading(false);
   };
 
@@ -38,11 +54,11 @@ function Auth({ onBack }: { onBack: () => void }) {
       <div className="w-full max-w-[400px]">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl shadow-xl shadow-blue-500/20 mb-4 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
-            <Ship className="text-white" size={32} />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-2xl shadow-xl shadow-blue-500/20 mb-4 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+            <Waves className="text-white" size={32} />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">PeakMooring</h2>
-          <p className="text-gray-400 mt-2">Gestione ormeggi professionale</p>
+          <h2 className="text-3xl font-bold tracking-tight text-white">OpenWater Regs</h2>
+          <p className="text-blue-300/80 mt-2 font-medium">Calendario Gare Nuoto</p>
         </div>
 
         <div className="glass-card !p-8 !mt-0 shadow-2xl border-white/5">
@@ -55,7 +71,41 @@ function Auth({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          <form onSubmit={handleEmailLogin} className="space-y-4">
+          <form onSubmit={handleAuth} className="space-y-4">
+            {!isLogin && (
+              <>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-gray-300 ml-1">Nome</label>
+                  <div className="input-group">
+                    <User className="input-icon" size={18} />
+                    <input 
+                      type="text" 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 input-with-icon focus:outline-none focus:border-blue-500 focus:bg-white/10 transition-all text-white placeholder:text-gray-600"
+                      placeholder="Mario"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required={!isLogin}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-gray-300 ml-1">Cognome</label>
+                  <div className="input-group">
+                    <User className="input-icon" size={18} />
+                    <input 
+                      type="text" 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 input-with-icon focus:outline-none focus:border-blue-500 focus:bg-white/10 transition-all text-white placeholder:text-gray-600"
+                      placeholder="Rossi"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required={!isLogin}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-300 ml-1">Email</label>
               <div className="input-group">
@@ -91,7 +141,7 @@ function Auth({ onBack }: { onBack: () => void }) {
               disabled={loading}
               className="w-full btn btn-primary py-3 flex items-center justify-center gap-2 mt-2 shadow-lg shadow-blue-600/20"
             >
-              {loading ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white" /> : 'Accedi'}
+              {loading ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-t-white" /> : (isLogin ? 'Accedi' : 'Registrati')}
             </button>
           </form>
 
@@ -114,23 +164,26 @@ function Auth({ onBack }: { onBack: () => void }) {
 
           <div className="mt-8 pt-6 border-t border-white/5 flex flex-col items-center gap-3">
             <button 
-              onClick={handleEmailSignUp}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setMessage(null);
+              }}
               className="auth-footer-link font-medium"
             >
-              Non hai un account? <span className="text-blue-400">Registrati</span>
+              {isLogin ? (
+                <>Non hai un account? <span className="text-blue-400">Registrati</span></>
+              ) : (
+                <>Hai già un account? <span className="text-blue-400">Accedi</span></>
+              )}
             </button>
             <button 
               onClick={onBack}
-              className="text-xs text-gray-600 hover:text-gray-400 transition-colors uppercase tracking-widest font-semibold"
+              className="text-xs text-gray-600 hover:text-gray-400 transition-colors uppercase tracking-widest font-semibold mt-2"
             >
               ← Torna alla Home
             </button>
           </div>
         </div>
-        
-        <p className="text-center text-gray-600 text-[11px] mt-8 uppercase tracking-[0.2em]">
-          &copy; 2024 PeakMooring • Sicurezza Crittografata
-        </p>
       </div>
     </div>
   );
