@@ -230,7 +230,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                       Gare Attive ({activeEvents.length})
                     </h2>
                     <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <Smartphone size={16} className="animate-rotate-phone" /> <span className="uppercase tracking-widest text-[10px] font-bold">Ruota per uscire</span>
+                      <Smartphone size={16} className="animate-rotate-phone" />
                     </div>
                   </div>
                 )}
