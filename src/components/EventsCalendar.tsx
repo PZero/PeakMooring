@@ -75,6 +75,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    window.location.reload(); // Force reload to ensure session is cleared
   };
 
   const handleEnhancedLogout = async () => {
@@ -146,12 +147,12 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 glass-card p-6 md:p-8 sticky top-0 z-10">
           <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/10">
-              <Calendar className="text-blue-500" size={32} />
+            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center shadow-lg border border-white/10 overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white tracking-tight">Calendario Gare 2026</h1>
-              <p className="text-blue-300/60 font-medium">Open Water Swimming Season</p>
+              <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Calendario 2026</h1>
+              <p className="text-blue-300/60 font-medium uppercase tracking-widest text-xs">Open Water Swimming Season</p>
             </div>
           </div>
           
@@ -172,18 +173,29 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
             
             <div className="h-8 w-px bg-white/10 mx-1 hidden sm:block" />
 
-            <button 
-              onClick={() => setShowProfile(true)}
-              className="w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 transition-all font-bold"
-              title="Il tuo profilo"
-            >
-              {userProfile?.first_name ? userProfile.first_name[0].toUpperCase() : <User size={18} />}
-            </button>
-
             <button onClick={() => setShowLogoutConfirm(true)} className="btn btn-outline p-3 hover:bg-red-500/10 hover:text-red-400" title="Esci">
               <LogOut size={20} />
             </button>
           </div>
+        </div>
+
+        {/* User Info Bar (Secondary Row) */}
+        <div className="flex items-center justify-between glass-card px-6 py-3 border-white/5 !mt-2">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xs">
+              {userProfile?.first_name ? userProfile.first_name[0].toUpperCase() : <User size={14} />}
+            </div>
+            <div className="text-sm font-medium text-gray-300">
+              Bentornato, <span className="text-white font-bold">{userProfile?.first_name || 'Atleta'}</span>
+            </div>
+          </div>
+          <button 
+            onClick={() => setShowProfile(true)}
+            className="text-xs font-black uppercase tracking-widest text-blue-400 hover:text-blue-300 flex items-center gap-2 bg-blue-500/10 px-3 py-1.5 rounded-lg transition-all"
+          >
+            <Settings size={14} />
+            Modifica Nome
+          </button>
         </div>
 
         {loading ? (

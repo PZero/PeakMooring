@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { Users, CheckCircle, XCircle, Clock, LogOut, Calendar } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, LogOut, Calendar } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -95,6 +95,7 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    window.location.reload();
   };
 
   const handleEnhancedLogout = async () => {
@@ -115,12 +116,12 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
-              <Users className="text-blue-500" size={24} />
+            <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Pannello Amministratore</h1>
-              <p className="text-gray-400">Gestione Utenze e Permessi</p>
+              <h1 className="text-2xl font-black text-white uppercase tracking-tighter">Admin Panel</h1>
+              <p className="text-gray-400 text-xs uppercase tracking-widest font-medium">Gestione Utenze e Permessi</p>
             </div>
           </div>
           

@@ -1,21 +1,18 @@
-import { Waves, CalendarDays, ShieldCheck, Users } from 'lucide-react';
+import { CalendarDays, ShieldCheck, Users } from 'lucide-react';
 
 function LandingPage({ onLogin }: { onLogin: () => void }) {
   return (
     <div className="min-h-screen">
       <div className="gradient-bg" />
       
-      <header className="container py-6">
-        <nav className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center transform -rotate-3">
-              <Waves className="text-white" size={24} />
+      <header className="container py-10">
+        <nav className="flex flex-col items-center justify-center gap-4">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center shadow-2xl border border-white/10 overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="text-xl font-bold text-white tracking-tight">OpenWater Regs</span>
+            <span className="text-2xl font-black text-white tracking-tighter uppercase">OpenWater Regs</span>
           </div>
-          <button onClick={onLogin} className="btn btn-outline border-white/20 hover:bg-white/10">
-            Accedi / Registrati
-          </button>
         </nav>
       </header>
 
@@ -41,8 +38,8 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
           </div>
         </section>
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-          <div className="glass-card p-8 group hover:-translate-y-1 transition-transform duration-300">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20 text-center">
+          <div className="glass-card p-8 group hover:-translate-y-1 transition-transform duration-300 flex flex-col items-center">
             <div className="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/30 transition-colors">
               <CalendarDays className="text-blue-400" size={28} />
             </div>
@@ -52,7 +49,7 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
             </p>
           </div>
           
-          <div className="glass-card p-8 group hover:-translate-y-1 transition-transform duration-300">
+          <div className="glass-card p-8 group hover:-translate-y-1 transition-transform duration-300 flex flex-col items-center">
             <div className="w-14 h-14 bg-cyan-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-cyan-500/30 transition-colors">
               <Users className="text-cyan-400" size={28} />
             </div>
@@ -62,7 +59,7 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
             </p>
           </div>
           
-          <div className="glass-card p-8 group hover:-translate-y-1 transition-transform duration-300">
+          <div className="glass-card p-8 group hover:-translate-y-1 transition-transform duration-300 flex flex-col items-center">
             <div className="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-500/30 transition-colors">
               <ShieldCheck className="text-green-400" size={28} />
             </div>
@@ -84,19 +81,19 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-            <div className="text-center md:text-left">
-              <div className="w-12 h-12 bg-gray-800 border-2 border-blue-500/50 rounded-full flex items-center justify-center font-bold text-blue-400 text-xl mx-auto md:mx-0 mb-6 shadow-lg shadow-blue-500/20">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-gray-800 border-2 border-blue-500/50 rounded-full flex items-center justify-center font-bold text-blue-400 text-xl mx-auto mb-6 shadow-lg shadow-blue-500/20">
                 1
               </div>
               <h4 className="text-lg font-bold text-white mb-2">Registrati</h4>
               <p className="text-gray-400">
-                Crea un account inserendo Nome, Cognome ed Email (oppure usa Google/Facebook).
+                Crea un account inserendo Nome, Cognome ed Email (oppure usa Google).
               </p>
             </div>
             
-            <div className="text-center md:text-left relative">
+            <div className="text-center relative">
               <div className="hidden md:block absolute top-6 -left-4 w-[calc(100%+32px)] h-[2px] bg-gradient-to-r from-blue-500/50 to-transparent -z-10" />
-              <div className="w-12 h-12 bg-gray-800 border-2 border-yellow-500/50 rounded-full flex items-center justify-center font-bold text-yellow-400 text-xl mx-auto md:mx-0 mb-6 shadow-lg shadow-yellow-500/20">
+              <div className="w-12 h-12 bg-gray-800 border-2 border-yellow-500/50 rounded-full flex items-center justify-center font-bold text-yellow-400 text-xl mx-auto mb-6 shadow-lg shadow-yellow-500/20">
                 2
               </div>
               <h4 className="text-lg font-bold text-white mb-2">Attendi</h4>
@@ -105,9 +102,9 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
               </p>
             </div>
             
-            <div className="text-center md:text-left relative">
+            <div className="text-center relative">
               <div className="hidden md:block absolute top-6 -left-4 w-[calc(100%+32px)] h-[2px] bg-gradient-to-r from-yellow-500/50 to-transparent -z-10" />
-              <div className="w-12 h-12 bg-gray-800 border-2 border-green-500/50 rounded-full flex items-center justify-center font-bold text-green-400 text-xl mx-auto md:mx-0 mb-6 shadow-lg shadow-green-500/20">
+              <div className="w-12 h-12 bg-gray-800 border-2 border-green-500/50 rounded-full flex items-center justify-center font-bold text-green-400 text-xl mx-auto mb-6 shadow-lg shadow-green-500/20">
                 3
               </div>
               <h4 className="text-lg font-bold text-white mb-2">Partecipa</h4>
