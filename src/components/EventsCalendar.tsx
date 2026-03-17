@@ -152,7 +152,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
     if (diffDays < 0) return 'text-gray-500 line-through';
     if (diffDays <= 10) return 'bg-red-500 animate-pulse text-white font-bold px-2 py-1 rounded';
     if (diffDays <= 20) return 'bg-yellow-500 text-gray-900 font-bold px-2 py-1 rounded';
-    return 'text-gray-300';
+    return 'text-slate-600 font-semibold';
   };
 
   const activeEvents = events.filter(e => e.status !== 'cancelled');
