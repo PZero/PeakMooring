@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { Calendar, Plus, LogOut, Settings, Trash2, Edit2, ExternalLink, MapPin, Map, Navigation, AlignLeft } from 'lucide-react';
+import { Calendar, Plus, LogOut, Settings, Trash2, Edit2, ExternalLink, Map, Navigation, AlignLeft, Clock } from 'lucide-react';
 
 import EventForm from './EventForm';
 
@@ -15,6 +15,10 @@ interface Event {
   notes: string | null;
   results_link: string | null;
   created_by: string;
+  status: 'active' | 'cancelled';
+  updated_by: string | null;
+  updater_email?: string; // We'll fetch this from joined profile
+  updated_at: string;
 }
 
 export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmin?: () => void }) {
@@ -29,13 +33,31 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
 
   const fetchEvents = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    // Fetch events and join with profiles to get updater's email
+    const { data: eventsData, error: eventsError } = await supabase
       .from('events')
-      .select('*')
-      .order('date', { ascending: true });
+      .select('*, profiles!events_updated_by_fkey(email)');
       
-    if (!error && data) {
-      setEvents(data as Event[]);
+    if (!eventsError && eventsData) {
+      // Map the joined data so we can use updater_email easily
+      const formattedEvents = eventsData.map((e: any) => ({
+        ...e,
+        updater_email: e.profiles?.email || 'Sconosciuto'
+      })) as Event[];
+
+      // Sort logic
+      formattedEvents.sort((a, b) => {
+        // 1. Cancelled events at the bottom
+        if (a.status === 'cancelled' && b.status !== 'cancelled') return 1;
+        if (a.status !== 'cancelled' && b.status === 'cancelled') return -1;
+        
+        // 2. Sort by registration_deadline (ascending, so soonest first)
+        const dateA = new Date(a.registration_deadline).getTime();
+        const dateB = new Date(b.registration_deadline).getTime();
+        return dateA - dateB;
+      });
+
+      setEvents(formattedEvents);
     }
     setLoading(false);
   };
@@ -44,7 +66,10 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       setCurrentUserId(session.user.id);
-      setIsAdmin(session.user.email === 'fnicora@gmail.com');
+      
+      // Check admin status from database
+      const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).single();
+      setIsAdmin(profile?.is_admin || session.user.email === 'fnicora@gmail.com');
     }
   };
 
@@ -72,13 +97,17 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
     fetchEvents(); // Refresh after save
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Sei sicuro di voler eliminare questo evento?')) {
-      const { error } = await supabase.from('events').delete().eq('id', id);
+  const handleDelete = async (event: Event) => {
+    if (window.confirm('Vuoi contrassegnare questa gara come ANNULLATA? (verrà spostata in fondo alla tabella). Se vuoi eliminarla definitivamente, contatta l\'amministratore.')) {
+      const { error } = await supabase
+        .from('events')
+        .update({ status: 'cancelled', updated_by: currentUserId })
+        .eq('id', event.id);
+        
       if (!error) {
-        setEvents(events.filter(e => e.id !== id));
+        fetchEvents();
       } else {
-        alert('Errore durante l\'eliminazione');
+        alert('Errore durante l\'aggiornamento dello stato');
       }
     }
   };
@@ -91,8 +120,29 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
     }
   };
 
-  const isDeadlinePassed = (deadline: string) => {
-    return new Date(deadline) < new Date();
+  const getDeadlineStyle = (deadlineString: string, status: string) => {
+    if (status === 'cancelled') return 'text-gray-500 line-through';
+    
+    const deadline = new Date(deadlineString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const diffTime = deadline.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    
+    if (diffDays < 0) {
+      // Passed
+      return 'text-gray-500 line-through';
+    } else if (diffDays <= 10) {
+      // Very close: pulsing red
+      return 'bg-red-500 animate-pulse text-white font-bold px-2 py-1 rounded';
+    } else if (diffDays <= 20) {
+      // Close: yellow
+      return 'bg-yellow-500 text-gray-900 font-bold px-2 py-1 rounded';
+    } else {
+      // Far
+      return 'text-gray-300';
+    }
   };
 
   return (
@@ -123,7 +173,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
               <span className="hidden sm:inline">Nuova Gara</span>
             </button>
             
-            {onNavigateToAdmin && (
+            {onNavigateToAdmin && isAdmin && (
               <button 
                 onClick={onNavigateToAdmin}
                 className="btn btn-outline flex items-center gap-2"
@@ -158,111 +208,115 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
             <p className="text-gray-400">Clicca su + Nuova Gara per inserire il primo evento.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {events.map(event => (
-              <div key={event.id} className="glass-card p-0 overflow-hidden group">
-                <div className="p-5 flex flex-col md:flex-row gap-6">
-                  
-                  {/* Event Info Left */}
-                  <div className="flex-1 space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getOrgColor(event.organization)}`}>
-                            {event.organization}
-                          </span>
-                          <span className="text-blue-400 font-semibold text-sm">
-                            {new Date(event.date).toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' })}
-                          </span>
-                        </div>
-                        <h2 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
+          <div className="glass-card overflow-x-auto">
+            <table className="w-full text-left text-sm text-gray-300">
+              <thead className="text-xs uppercase bg-black/40 text-gray-400">
+                <tr>
+                  <th scope="col" className="px-6 py-4 rounded-tl-xl truncate">Gara & Ente</th>
+                  <th scope="col" className="px-6 py-4 truncate">Data</th>
+                  <th scope="col" className="px-6 py-4 truncate">Scadenza Iscr.</th>
+                  <th scope="col" className="px-6 py-4">Distanze / Note</th>
+                  <th scope="col" className="px-6 py-4 truncate text-center">Link Utili</th>
+                  <th scope="col" className="px-6 py-4 min-w-[150px]">Ultima Modifica</th>
+                  <th scope="col" className="px-6 py-4 rounded-tr-xl text-right">Azioni</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map(event => {
+                  const isCancelled = event.status === 'cancelled';
+                  const rowClass = isCancelled 
+                    ? "border-b border-white/5 bg-red-950/10 opacity-60 hover:opacity-100 transition-opacity" 
+                    : "border-b border-white/5 hover:bg-white/5 transition-colors";
+                    
+                  return (
+                    <tr key={event.id} className={rowClass}>
+                      <td className="px-6 py-4 font-medium text-white max-w-[200px]">
+                        <div className={`mb-1 ${isCancelled ? 'line-through text-gray-500' : ''}`}>
                           {event.name}
-                        </h2>
-                      </div>
-                      
-                      {/* Mobile Actions */}
-                      <div className="flex md:hidden items-center gap-2">
-                        {(isAdmin || currentUserId === event.created_by) && (
-                          <>
-                            <button 
-                              onClick={() => handleEdit(event)}
-                              className="p-2 text-gray-400 hover:text-blue-400 bg-white/5 rounded-lg"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            <button onClick={() => handleDelete(event.id)} className="p-2 text-gray-400 hover:text-red-400 bg-white/5 rounded-lg">
-                              <Trash2 size={16} />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
-                      {event.distances && (
-                        <div className="flex items-center gap-2 text-sm text-gray-300">
-                          <Map size={16} className="text-blue-500" />
-                          <span><span className="text-gray-500">Distanze:</span> {event.distances}</span>
                         </div>
-                      )}
-                      
-                      <div className="flex items-center gap-2 text-sm text-gray-300">
-                        <Calendar size={16} className={isDeadlinePassed(event.registration_deadline) ? 'text-red-500' : 'text-yellow-500'} />
-                        <span className={isDeadlinePassed(event.registration_deadline) ? 'text-red-400 line-through' : ''}>
-                          <span className="text-gray-500">Iscrizioni entro:</span> {new Date(event.registration_deadline).toLocaleDateString()}
+                        <span className={`px-2 py-0.5 rounded-full text-xs border ${getOrgColor(event.organization)}`}>
+                          {event.organization}
                         </span>
-                      </div>
-                    </div>
-
-                    {event.notes && (
-                      <div className="flex items-start gap-2 text-sm text-gray-400 bg-black/20 p-3 rounded-lg border border-white/5">
-                        <AlignLeft size={16} className="text-gray-500 shrink-0 mt-0.5" />
-                        <p className="line-clamp-2">{event.notes}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Actions Right (Desktop) & Links */}
-                  <div className="flex flex-col justify-between items-start md:items-end gap-4 border-t border-white/10 md:border-t-0 md:border-l md:pl-6 pt-4 md:pt-0 min-w-[200px]">
-                    
-                    <div className="flex flex-row md:flex-col gap-2 w-full">
-                      {event.event_link && (
-                        <a href={event.event_link} target="_blank" rel="noopener noreferrer" 
-                           className="flex-1 flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm transition-colors border border-white/10">
-                          <ExternalLink size={14} /> Sito Evento
-                        </a>
-                      )}
-                      {event.results_link && (
-                        <a href={event.results_link} target="_blank" rel="noopener noreferrer" 
-                           className="flex-1 flex items-center justify-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 px-4 py-2 rounded-lg text-sm transition-colors border border-blue-500/20">
-                          <Navigation size={14} /> Risultati
-                        </a>
-                      )}
-                    </div>
-                    
-                    {/* Desktop Actions */}
-                    <div className="hidden md:flex items-center gap-2 mt-auto w-full justify-end">
-                      {(isAdmin || currentUserId === event.created_by) && (
-                        <>
-                          <button 
-                            onClick={() => handleEdit(event)}
-                            className="p-2 text-gray-400 hover:text-blue-400 bg-white/5 hover:bg-white/10 rounded-lg transition-colors" 
-                            title="Modifica"
-                          >
-                            <Edit2 size={16} />
-                          </button>
-                          <button onClick={() => handleDelete(event.id)} className="p-2 text-gray-400 hover:text-red-400 bg-white/5 hover:bg-red-500/10 rounded-lg transition-colors" title="Elimina">
-                            <Trash2 size={16} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                    
-                  </div>
-
-                </div>
-              </div>
-            ))}
+                        {isCancelled && <span className="ml-2 text-xs text-red-500 font-bold uppercase">Annullata</span>}
+                      </td>
+                      <td className={`px-6 py-4 text-blue-400 font-medium ${isCancelled ? 'line-through' : ''}`}>
+                        {new Date(event.date).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={getDeadlineStyle(event.registration_deadline, event.status)}>
+                          {new Date(event.registration_deadline).toLocaleDateString()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 min-w-[200px]">
+                        {event.distances && (
+                          <div className="flex items-center gap-1 text-xs mb-1">
+                            <Map size={14} className="text-blue-500 shrink-0" />
+                            <span className="truncate" title={event.distances}>{event.distances}</span>
+                          </div>
+                        )}
+                        {event.notes && (
+                          <div className="flex items-center gap-1 text-xs text-gray-400">
+                            <AlignLeft size={14} className="text-gray-500 shrink-0" />
+                            <span className="truncate max-w-[150px]" title={event.notes}>{event.notes}</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          {event.event_link && (
+                            <a href={event.event_link} target="_blank" rel="noopener noreferrer" 
+                               className="p-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10" title="Sito Evento">
+                              <ExternalLink size={16} />
+                            </a>
+                          )}
+                          {event.results_link && (
+                            <a href={event.results_link} target="_blank" rel="noopener noreferrer" 
+                               className="p-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors border border-blue-500/20" title="Classifiche/Risultati">
+                              <Navigation size={16} />
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Clock size={12} />
+                          {new Date(event.updated_at).toLocaleDateString()}
+                        </div>
+                        {event.updater_email && (
+                          <div className="truncate max-w-[120px]" title={event.updater_email}>
+                            da: {event.updater_email}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {(isAdmin || currentUserId === event.created_by) && (
+                            <>
+                              <button 
+                                onClick={() => handleEdit(event)}
+                                className="p-2 text-gray-400 hover:text-blue-400 bg-white/5 hover:bg-white/10 rounded-lg transition-colors" 
+                                title="Modifica"
+                              >
+                                <Edit2 size={16} />
+                              </button>
+                              {!isCancelled && (
+                                <button 
+                                  onClick={() => handleDelete(event)} 
+                                  className="p-2 text-gray-400 hover:text-red-400 bg-white/5 hover:bg-red-500/10 rounded-lg transition-colors" 
+                                  title="Annulla Gara"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

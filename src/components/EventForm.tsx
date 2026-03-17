@@ -51,6 +51,7 @@ export default function EventForm({ event, onClose, onSaved, currentUserId }: Ev
       notes: notes || null,
       results_link: resultsLink || null,
       created_by: event?.created_by || currentUserId,
+      updated_by: currentUserId,
       updated_at: new Date().toISOString()
     };
 
