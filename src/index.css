@@ -158,6 +158,12 @@ body {
 }
 
 /* Utilities */
+.hidden { display: none !important; }
+@media (min-width: 768px) {
+  .md\:table-cell { display: table-cell !important; }
+  .md\:hidden { display: none !important; }
+  .md\:flex { display: flex !important; }
+}
 .flex { display: flex; }
 .items-center { align-items: center; }
 .justify-center { justify-content: center; }

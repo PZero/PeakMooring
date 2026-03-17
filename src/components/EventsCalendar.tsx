@@ -211,9 +211,6 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                 </h2>
                 <div className="md:hidden flex items-center gap-3">
                   <div className="flex flex-col items-end">
-                    <div className="text-[10px] text-gray-500 uppercase tracking-widest flex items-center gap-1 animate-pulse">
-                      <span>Scorri</span> <span>→</span>
-                    </div>
                     <div className="flex items-center gap-1">
                       <Smartphone size={12} className="text-blue-500 animate-rotate-phone" />
                     </div>
@@ -235,19 +232,17 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                   </div>
                 )}
 
-                {/* Scroll hint overlay */}
-                {!isFullscreen && <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none md:hidden z-10" />}
-                
+                {/* Table container */}
                 <div className="overflow-x-auto pb-2 custom-scrollbar">
                   <table className="w-full text-left border-collapse table-nowrap">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Gara / Org</th>
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Data Gara</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Gara</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Data</th>
                         <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Scadenza Is.</th>
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Distanze / Info</th>
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Modificato Da</th>
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest text-right">Azioni</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden md:table-cell">Distanze / Info</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden md:table-cell">Modificato Da</th>
+                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest text-right hidden md:table-cell">Azioni</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
@@ -256,9 +251,9 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                       ) : (
                         activeEvents.map(event => (
                           <tr key={event.id} className="group hover:bg-white/[0.02] transition-colors">
-                            <td className="px-6 py-5 border-r border-white/5 last:border-r-0">
-                              <div className="font-bold text-white group-hover:text-blue-400">{event.name}</div>
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-black border mt-1 block w-max ${
+                            <td className="px-4 py-4 border-r border-white/5 last:border-r-0">
+                              <div className="font-bold text-white group-hover:text-blue-400 text-sm">{event.name}</div>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-black border mt-1 hidden md:block w-max ${
                                 event.organization === 'FIN' ? 'bg-blue-500/20 text-blue-400 border-blue-500/20' :
                                 event.organization === 'UISP' ? 'bg-orange-500/20 text-orange-400 border-orange-500/20' :
                                 'bg-purple-500/20 text-purple-400 border-purple-500/20'
@@ -266,19 +261,19 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                                 {event.organization}
                               </span>
                             </td>
-                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0">
-                              <div className="flex items-center gap-2 text-gray-300 font-bold capitalize">
+                            <td className="px-4 py-4 border-r border-white/5 last:border-r-0">
+                              <div className="flex items-center gap-2 text-gray-300 font-bold capitalize text-sm">
                                 <Calendar size={14} className="text-gray-500" />
                                 {formatDateShort(event.date)}
                               </div>
                             </td>
-                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0">
-                              <div className={`inline-flex items-center gap-2 px-2 py-1 rounded-lg font-bold text-sm capitalize ${getDeadlineStyle(event.registration_deadline)}`}>
-                                <Clock size={14} />
+                            <td className="px-4 py-4 border-r border-white/5 last:border-r-0">
+                              <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg font-bold text-[11px] md:text-sm capitalize ${getDeadlineStyle(event.registration_deadline)}`}>
+                                <Clock size={12} />
                                 {formatDateShort(event.registration_deadline)}
                               </div>
                             </td>
-                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0">
+                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0 hidden md:table-cell">
                               <div className="space-y-1.5 max-w-[200px] whitespace-normal">
                                 {event.distances && <div className="text-xs text-gray-300 leading-tight">{event.distances}</div>}
                                 <div className="flex gap-3">
@@ -294,13 +289,13 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                                 </div>
                               </div>
                             </td>
-                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0">
+                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0 hidden md:table-cell">
                               <div className="text-[10px] text-gray-500">
                                 <div>{formatDateShort(event.updated_at)}</div>
                                 <div className="text-blue-400 font-bold truncate max-w-[100px]">{event.updater_email}</div>
                               </div>
                             </td>
-                            <td className="px-5 py-4 text-right">
+                            <td className="px-5 py-4 text-right hidden md:table-cell">
                               <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button onClick={() => { setEditingEvent(event); setShowForm(true); }} className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white"><Edit2 size={16} /></button>
                                 <button onClick={() => { if(confirm('Annullare?')) handleCancelEvent(event.id); }} className="p-1.5 hover:bg-red-500/10 rounded-lg text-red-500/60 hover:text-red-400"><Trash2 size={16} /></button>
@@ -329,15 +324,15 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                         <tr className="bg-white/5 border-b border-white/10">
                           <th className="px-6 py-3 text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0">Gara</th>
                           <th className="px-6 py-3 text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0">Data</th>
-                          <th className="px-6 py-3 text-xs font-bold text-gray-600 uppercase tracking-widest text-right">Azioni</th>
+                          <th className="px-6 py-3 text-xs font-bold text-gray-600 uppercase tracking-widest text-right hidden md:table-cell">Azioni</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5 text-gray-500">
                         {cancelledEvents.map(event => (
                           <tr key={event.id} className="italic line-through decoration-gray-700">
-                            <td className="px-6 py-4 border-r border-white/5 last:border-r-0">{event.name}</td>
-                            <td className="px-6 py-4 border-r border-white/5 last:border-r-0">{new Date(event.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}</td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-4 py-4 border-r border-white/5 last:border-r-0 text-sm">{event.name}</td>
+                            <td className="px-4 py-4 border-r border-white/5 last:border-r-0 text-sm">{new Date(event.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}</td>
+                            <td className="px-6 py-4 text-right hidden md:table-cell">
                               <div className="flex items-center justify-end gap-3">
                                 <button onClick={() => handleRestoreEvent(event.id)} className="text-blue-500/50 hover:text-blue-400 no-underline italic flex items-center gap-1">
                                   <RotateCcw size={14} /> Ripristina
