@@ -97,6 +97,18 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
     else alert('Errore durante il ripristino');
   };
 
+  const handleDeletePermanent = async (id: string) => {
+    if (!confirm('Eliminare definitivamente questa gara? L\'azione è irreversibile.')) return;
+    
+    const { error } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', id);
+      
+    if (!error) fetchEvents();
+    else alert('Errore durante l\'eliminazione definitiva');
+  };
+
   const getDeadlineStyle = (deadlineString: string) => {
     const deadline = new Date(deadlineString);
     const today = new Date();
@@ -262,9 +274,20 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                             <td className="px-6 py-4">{event.name}</td>
                             <td className="px-6 py-4">{new Date(event.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}</td>
                             <td className="px-6 py-4 text-right">
-                              <button onClick={() => handleRestoreEvent(event.id)} className="text-blue-500/50 hover:text-blue-400 no-underline italic flex items-center gap-1 justify-end ml-auto">
-                                <RotateCcw size={14} /> Ripristina
-                              </button>
+                              <div className="flex items-center justify-end gap-3">
+                                <button onClick={() => handleRestoreEvent(event.id)} className="text-blue-500/50 hover:text-blue-400 no-underline italic flex items-center gap-1">
+                                  <RotateCcw size={14} /> Ripristina
+                                </button>
+                                {isAdmin && (
+                                  <button 
+                                    onClick={() => handleDeletePermanent(event.id)} 
+                                    className="p-1.5 hover:bg-red-500/10 rounded-lg text-red-500/40 hover:text-red-500 transition-colors"
+                                    title="Elimina definitivamente"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         ))}

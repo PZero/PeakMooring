@@ -42,9 +42,54 @@ ON events
 FOR ALL 
 TO authenticated 
 USING (
-  (SELECT is_admin FROM profiles WHERE id = auth.uid() LIMIT 1) = true
+  (SELECT is_admin FROM profiles WHERE id = auth.uid()) = true
   OR auth.jwt()->>'email' = 'fnicora@gmail.com'
 );
+
+DROP POLICY IF EXISTS "Approved users can manage events" ON events;
+CREATE POLICY "Approved users can manage events" 
+ON events 
+FOR ALL
+TO authenticated 
+USING (
+  (SELECT status FROM profiles WHERE id = auth.uid()) = 'approved'
+)
+WITH CHECK (
+  (SELECT status FROM profiles WHERE id = auth.uid()) = 'approved'
+  AND (
+    -- Approved users can do everything EXCEPT DELETE
+    -- We'll explicitly handle DELETE in a separate policy or by splitting this one
+    -- However, in Supabase, if ANY policy allows a DELETE, it happens.
+    -- So we need to ensure DELETE is ONLY in the admin policy.
+    true
+  )
+);
+
+-- Refined: Explicitly split policies to ensure DELETE is ADMIN ONLY
+DROP POLICY IF EXISTS "Approved users can do everything on events" ON events;
+DROP POLICY IF EXISTS "Approved users can manage events" ON events;
+
+CREATE POLICY "Approved users can view and edit events"
+ON events
+FOR ALL -- This includes SELECT, INSERT, UPDATE
+TO authenticated
+USING (
+  (SELECT status FROM profiles WHERE id = auth.uid()) = 'approved'
+)
+WITH CHECK (
+  (SELECT status FROM profiles WHERE id = auth.uid()) = 'approved'
+);
+
+-- We need to make sure the "FOR ALL" above doesn't allow DELETE for non-admins.
+-- Actually, "FOR ALL" does allow DELETE. We should use specific actions.
+
+DROP POLICY IF EXISTS "Approved users can view and edit events" ON events;
+
+CREATE POLICY "Approved users can select events" ON events FOR SELECT TO authenticated USING ( (SELECT status FROM profiles WHERE id = auth.uid()) = 'approved' );
+CREATE POLICY "Approved users can insert events" ON events FOR INSERT TO authenticated WITH CHECK ( (SELECT status FROM profiles WHERE id = auth.uid()) = 'approved' );
+CREATE POLICY "Approved users can update events" ON events FOR UPDATE TO authenticated USING ( (SELECT status FROM profiles WHERE id = auth.uid()) = 'approved' );
+-- DELETE is intentionally missing here, so only the Admin ALL policy will permit it.
+
 
 -- Profiles policies: update Admin policy to use is_admin
 -- We use a simpler check: is the current user's entry in profiles marked as is_admin?
