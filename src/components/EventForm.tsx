@@ -81,7 +81,7 @@ export default function EventForm({ event, onClose, onSaved, currentUserId }: Ev
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto pt-4 sm:p-4">
-      <div className="bg-gray-900 border-t sm:border border-white/10 rounded-t-3xl sm:rounded-2xl w-full max-w-2xl shadow-2xl relative animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
+      <div className="bg-gray-900 border-t sm:border border-white/10 rounded-t-3xl sm:rounded-2xl w-full max-w-xl shadow-2xl relative animate-in slide-in-from-bottom sm:zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10 bg-gray-900 z-10 rounded-t-3xl sm:rounded-t-2xl shrink-0">

@@ -211,6 +211,9 @@ body {
 .w-16 { width: 4rem; }
 .h-16 { height: 4rem; }
 .w-full { width: 100%; }
+.max-w-xl { max-width: 36rem; }
+.max-w-lg { max-width: 32rem; }
+.max-w-md { max-width: 28rem; }
 .max-w-sm { max-width: 24rem; }
 .max-w-4xl { max-width: 56rem; }
 .max-w-7xl { max-width: 80rem; }
