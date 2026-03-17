@@ -239,11 +239,11 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                       <tr className="bg-slate-50 border-b border-slate-200">
                         <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0">Gara</th>
                         <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Org.</th>
-                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[10px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 whitespace-nowrap">Data</th>
-                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[10px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 whitespace-nowrap">Scadenza Is.</th>
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Distanze / Info</th>
-                        <th className="px-5 py-4 text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Modificato Da</th>
-                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 text-right">Azioni</th>
+                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 whitespace-nowrap">Data</th>
+                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 whitespace-nowrap">Scadenza</th>
+                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Distanze / Info</th>
+                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Modificato</th>
+                        <th className="px-1.5 md:px-5 py-3 md:py-4 text-[11px] md:text-xs font-black text-slate-900 uppercase tracking-widest border-r border-white/10 last:border-r-0 text-right"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
@@ -325,10 +325,10 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-white/5 border-b border-white/10">
-                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0">Gara</th>
-                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Org.</th>
-                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0">Data</th>
-                          <th className="px-1.5 md:px-6 py-3 text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0 text-right">Azioni</th>
+                          <th className="px-1.5 md:px-6 py-3 text-[11px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0">Gara</th>
+                          <th className="px-1.5 md:px-6 py-3 text-[11px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0 hidden sm:table-cell landscape:table-cell">Org.</th>
+                          <th className="px-1.5 md:px-6 py-3 text-[11px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0">Data</th>
+                          <th className="px-1.5 md:px-6 py-3 text-[11px] md:text-xs font-bold text-gray-600 uppercase tracking-widest border-r border-white/10 last:border-r-0 text-right"></th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5 text-gray-500">
