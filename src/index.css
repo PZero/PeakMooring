@@ -163,7 +163,11 @@ body {
   .md\:table-cell { display: table-cell !important; }
   .md\:hidden { display: none !important; }
   .md\:flex { display: flex !important; }
+  .md\:px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .md\:px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
 }
+.px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
 .flex { display: flex; }
 .items-center { align-items: center; }
 .justify-center { justify-content: center; }

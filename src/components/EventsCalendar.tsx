@@ -163,7 +163,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 px-4 md:px-8 pt-24 pb-20">
+    <div className="min-h-screen bg-gray-950 px-2 md:px-8 pt-24 pb-20">
       <div className="max-w-7xl mx-auto space-y-6 w-full">
         
         {/* Fixed Top Header */}
@@ -362,9 +362,9 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
         className="fixed bottom-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        <div className="max-w-7xl mx-auto grid grid-cols-3 items-center p-2 md:px-8">
-          {/* Column 1: Logout (Left) */}
-          <div className="flex justify-start">
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-6 p-2 md:px-8">
+          <div className="flex items-center gap-4">
+            {/* Logout Button */}
             <button 
               onClick={() => setShowLogoutConfirm(true)} 
               className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500 hover:text-red-400 hover:bg-red-500/20 transition-all active:scale-95 shrink-0"
@@ -372,27 +372,24 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
             >
               <LogOut size={20} />
             </button>
-          </div>
 
-          {/* Column 2: Profile (Center) */}
-          <div className="flex justify-center items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white border border-white/10 shadow-inner shrink-0">
-              <span className="text-sm font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-white whitespace-nowrap">{userProfile?.first_name || 'Atleta'}</span>
-              <button 
-                onClick={() => setShowProfile(true)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/5 text-gray-400 hover:text-blue-400 hover:bg-white/10 transition-all active:scale-95"
-                title="Modifica Profilo"
-              >
-                <Edit2 size={14} />
-              </button>
+            {/* Profile Info */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white border border-white/10 shadow-inner shrink-0">
+                <span className="text-sm font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-white whitespace-nowrap">{userProfile?.first_name || 'Atleta'}</span>
+                <button 
+                  onClick={() => setShowProfile(true)}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/5 text-gray-400 hover:text-blue-400 hover:bg-white/10 transition-all active:scale-95"
+                  title="Modifica Profilo"
+                >
+                  <Edit2 size={14} />
+                </button>
+              </div>
             </div>
           </div>
-
-          {/* Column 3: Spacer/Empty (Right) */}
-          <div className="hidden sm:block"></div>
         </div>
       </div>
     </div>
