@@ -18,20 +18,22 @@ function App() {
   const [adminView, setAdminView] = React.useState<'panel' | 'calendar'>('calendar');
 
   const fetchProfile = async (userId: string, email?: string) => {
+    // Failsafe admin: guarantee access even if profile record is missing or query fails
+    if (email === 'fnicora@gmail.com') {
+      setUserRole('admin');
+      setUserStatus('approved');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase.from('profiles').select('role, status').eq('id', userId).single();
       
       if (error) throw error;
       
       if (data) {
-        // Failsafe admin
-        if (email === 'fnicora@gmail.com') {
-          setUserRole('admin');
-          setUserStatus('approved');
-        } else {
-          setUserRole(data.role);
-          setUserStatus(data.status);
-        }
+        setUserRole(data.role);
+        setUserStatus(data.status);
       }
     } catch (e) {
       console.error('Error fetching profile:', e);
