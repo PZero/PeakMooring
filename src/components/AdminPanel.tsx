@@ -75,6 +75,9 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
   };
 
   const handleAdminToggle = async (userId: string, isAdmin: boolean) => {
+    // Optimistic update
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_admin: isAdmin } : u));
+
     const { error } = await supabase
       .from('profiles')
       .update({ is_admin: isAdmin })
@@ -83,8 +86,9 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
     if (error) {
       console.error("Error updating admin status:", error);
       alert("Errore durante l'aggiornamento dei permessi admin");
+      // Rollback on error
+      fetchUsers();
     }
-    // State will be updated via Realtime channel
   };
 
   const handleLogout = async () => {

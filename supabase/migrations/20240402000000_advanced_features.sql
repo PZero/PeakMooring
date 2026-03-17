@@ -47,12 +47,14 @@ USING (
 );
 
 -- Profiles policies: update Admin policy to use is_admin
+-- We use a simpler check: is the current user's entry in profiles marked as is_admin?
+-- Note: Supabase RLS policies on the same table can sometimes cause recursion if not careful.
 DROP POLICY IF EXISTS "Admins can update all profiles" ON profiles;
 CREATE POLICY "Admins can update all profiles" 
 ON profiles 
 FOR UPDATE
 USING (
-  (SELECT is_admin FROM profiles WHERE id = auth.uid() LIMIT 1) = true
+  (SELECT is_admin FROM profiles WHERE id = auth.uid()) = true
   OR auth.jwt()->>'email' = 'fnicora@gmail.com'
 );
 

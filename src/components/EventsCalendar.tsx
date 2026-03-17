@@ -124,7 +124,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
               <Calendar className="text-blue-500" size={32} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white tracking-tight">Calendario Gare 2024</h1>
+              <h1 className="text-3xl font-bold text-white tracking-tight">Calendario Gare 2026</h1>
               <p className="text-blue-300/60 font-medium">Open Water Swimming Season</p>
             </div>
           </div>
