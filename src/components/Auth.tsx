@@ -178,7 +178,7 @@ function Auth({ onBack }: { onBack: () => void }) {
 
           <div className="social-divider">oppure continua con</div>
 
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-3 mt-6">
             <button 
               onClick={() => handleOAuthLogin('google')}
               className="btn btn-outline flex items-center justify-center gap-3 py-3 text-sm hover:bg-white/5 transition-colors border-white/10"
@@ -220,7 +220,7 @@ function Auth({ onBack }: { onBack: () => void }) {
               )}
             </button>
             
-            <div className="pt-4">
+            <div className="pt-8 mt-4">
               <button 
                 onClick={onBack}
                 className="text-[10px] text-gray-500 hover:text-white transition-all uppercase tracking-[1.5em] font-black py-4 px-8 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 shadow-xl"
