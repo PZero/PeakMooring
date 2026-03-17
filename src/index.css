@@ -536,3 +536,31 @@ body {
 .shadow-2xl {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
+
+/* Organization-based Utilities for Events Table */
+.bg-sky-100 { background-color: #e0f2fe !important; }
+.bg-sky-200 { background-color: #bae6fd !important; }
+.bg-emerald-100 { background-color: #d1fae5 !important; }
+.bg-emerald-200 { background-color: #a7f3d0 !important; }
+.bg-amber-100 { background-color: #fef3c7 !important; }
+.bg-amber-200 { background-color: #fde68a !important; }
+.bg-sky-50 { background-color: #f0f9ff !important; }
+.bg-emerald-50 { background-color: #f0fdf4 !important; }
+.bg-amber-50 { background-color: #fffbeb !important; }
+
+.bg-sky-500\/20 { background-color: rgba(14, 165, 233, 0.2) !important; }
+.bg-emerald-500\/20 { background-color: rgba(16, 185, 129, 0.2) !important; }
+.bg-amber-500\/20 { background-color: rgba(245, 158, 11, 0.2) !important; }
+
+.text-sky-500 { color: #0ea5e9 !important; }
+.text-emerald-500 { color: #10b981 !important; }
+.text-amber-500 { color: #f59e0b !important; }
+.text-sky-600 { color: #0284c7 !important; }
+.text-emerald-600 { color: #059669 !important; }
+.text-amber-600 { color: #d97706 !important; }
+.text-slate-900 { color: #0f172a !important; }
+
+.border-sky-500\/20 { border-color: rgba(14, 165, 233, 0.2) !important; }
+.border-emerald-500\/20 { border-color: rgba(16, 185, 129, 0.2) !important; }
+.border-amber-500\/20 { border-color: rgba(245, 158, 11, 0.2) !important; }
+

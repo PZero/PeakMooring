@@ -259,20 +259,20 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                           return (
                             <tr key={event.id} className={`group transition-colors`}>
                             <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 ${rowBgColor}`}>
-                              <div className="font-bold text-white group-hover:text-blue-400 text-[12px] md:text-sm whitespace-normal break-words">{event.name}</div>
+                              <div className="font-bold text-slate-900 group-hover:text-sky-600 text-[12px] md:text-sm whitespace-normal break-words">{event.name}</div>
                             </td>
                             <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
                               <span className={`px-2 py-0.5 rounded text-[10px] font-black border w-max ${
-                                event.organization === 'FIN' ? 'bg-blue-500/20 text-blue-400 border-blue-500/20' :
-                                event.organization === 'UISP' ? 'bg-orange-500/20 text-orange-400 border-orange-500/20' :
-                                'bg-purple-500/20 text-purple-400 border-purple-500/20'
+                                event.organization === 'FIN' ? 'bg-sky-500/20 text-sky-600 border-sky-500/20' :
+                                event.organization === 'UISP' ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/20' :
+                                'bg-amber-500/20 text-amber-600 border-amber-500/20'
                               }`}>
                                 {event.organization}
                               </span>
                             </td>
                             <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 whitespace-nowrap ${rowBgColor}`}>
-                              <div className="flex items-center gap-1 text-gray-300 font-bold capitalize text-[12px] md:text-sm">
-                                <Calendar size={12} className="text-gray-500" />
+                              <div className="flex items-center gap-1 text-slate-700 font-bold capitalize text-[12px] md:text-sm">
+                                <Calendar size={12} className="text-slate-500" />
                                 {formatDateShort(event.date)}
                               </div>
                             </td>
@@ -284,7 +284,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                             </td>
                             <td className={`px-1.5 md:px-5 py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
                               <div className="space-y-1.5 max-w-[200px] whitespace-normal">
-                                {event.distances && <div className="text-xs text-gray-300 leading-tight">{event.distances}</div>}
+                                {event.distances && <div className="text-xs text-slate-700 leading-tight">{event.distances}</div>}
                                 <div className="flex gap-3">
                                   {event.event_link && <a href={event.event_link} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-lg transition-all" title="Sito Gara"><ExternalLink size={16} /></a>}
                                   {event.results_link && (
@@ -299,9 +299,9 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                               </div>
                             </td>
                             <td className={`px-1.5 md:px-5 py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
-                              <div className="text-[10px] text-gray-500">
+                              <div className="text-[10px] text-slate-500">
                                 <div>{formatDateShort(event.updated_at)}</div>
-                                <div className="text-blue-400 font-bold truncate max-w-[100px]">{event.updater_email}</div>
+                                <div className="text-sky-600 font-bold truncate max-w-[100px]">{event.updater_email}</div>
                               </div>
                             </td>
                             <td className={`px-1.5 md:px-5 py-3 md:py-4 text-right border-l border-black/5 ${rowBgColor}`}>
@@ -346,10 +346,14 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                             'bg-amber-50';
 
                           return (
-                            <tr key={event.id} className={`italic line-through decoration-gray-400 transition-colors`}>
+                            <tr key={event.id} className={`italic line-through decoration-slate-400 transition-colors`}>
                             <td className={`px-1.5 md:px-4 py-4 border-r border-black/5 last:border-r-0 text-[12px] md:text-sm whitespace-normal break-words ${rowBgColor}`}>{event.name}</td>
                             <td className={`px-1.5 md:px-4 py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
-                              <span className="px-2 py-0.5 rounded text-[10px] font-black border bg-gray-500/10 text-gray-500 border-gray-500/20">{event.organization}</span>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-black border ${
+                                event.organization === 'FIN' ? 'bg-sky-500/20 text-sky-600 border-sky-500/20' :
+                                event.organization === 'UISP' ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/20' :
+                                'bg-amber-500/20 text-amber-600 border-amber-500/20'
+                              }`}>{event.organization}</span>
                             </td>
                             <td className={`px-1.5 md:px-4 py-4 border-r border-black/5 last:border-r-0 text-[12px] md:text-sm whitespace-nowrap ${rowBgColor}`}>{new Date(event.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}</td>
                             <td className={`px-1.5 md:px-6 py-4 text-right border-l border-black/5 ${rowBgColor}`}>
