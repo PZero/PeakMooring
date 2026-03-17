@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { Calendar, Plus, LogOut, Settings, Trash2, Edit2, ExternalLink, AlignLeft, Clock, RotateCcw } from 'lucide-react';
+import { Calendar, Plus, LogOut, Settings, Trash2, Edit2, ExternalLink, AlignLeft, Clock, RotateCcw, User } from 'lucide-react';
 
 import EventForm from './EventForm';
+import ProfileModal from './ProfileModal';
 
 interface Event {
   id: string;
@@ -28,7 +29,9 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
   const [isAdmin, setIsAdmin] = React.useState(false);
   
   const [showForm, setShowForm] = React.useState(false);
+  const [showProfile, setShowProfile] = React.useState(false);
   const [editingEvent, setEditingEvent] = React.useState<Event | undefined>(undefined);
+  const [userProfile, setUserProfile] = React.useState<{ first_name: string | null, last_name: string | null } | null>(null);
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -57,8 +60,9 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       setCurrentUserId(session.user.id);
-      const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).single();
+      const { data: profile } = await supabase.from('profiles').select('is_admin, first_name, last_name').eq('id', session.user.id).single();
       setIsAdmin(profile?.is_admin || session.user.email === 'fnicora@gmail.com');
+      setUserProfile(profile || null);
     }
   };
 
@@ -155,6 +159,17 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
               <Plus size={20} />
               Nuova Gara
             </button>
+            
+            <div className="h-8 w-px bg-white/10 mx-1 hidden sm:block" />
+
+            <button 
+              onClick={() => setShowProfile(true)}
+              className="w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 transition-all font-bold"
+              title="Il tuo profilo"
+            >
+              {userProfile?.first_name ? userProfile.first_name[0].toUpperCase() : <User size={18} />}
+            </button>
+
             <button onClick={handleLogout} className="btn btn-outline p-3 hover:bg-red-500/10 hover:text-red-400" title="Esci">
               <LogOut size={20} />
             </button>
@@ -307,6 +322,17 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
           currentUserId={currentUserId || ''}
           onClose={() => setShowForm(false)}
           onSaved={handleSaved}
+        />
+      )}
+
+      {showProfile && currentUserId && (
+        <ProfileModal 
+          userId={currentUserId}
+          onClose={() => setShowProfile(false)}
+          onUpdated={() => {
+            checkUser();
+            fetchEvents(); // Refresh to update "Ultima Modifica" names
+          }}
         />
       )}
     </div>
