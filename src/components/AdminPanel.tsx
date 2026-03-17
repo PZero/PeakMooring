@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { CheckCircle, XCircle, Clock, LogOut, Calendar, Edit2 } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, LogOut, Calendar } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -122,28 +122,29 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
   const rejectedUsers = users.filter(u => u.status === 'rejected');
 
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col pt-4 pb-24 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-6 w-full px-4 md:px-0 flex-1">
-        {/* Header - Compacted like EventsCalendar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 md:p-6 sticky top-2 z-10 shadow-2xl border-white/10 mt-2">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border border-white/10 shadow-lg overflow-hidden shrink-0">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-150" />
+    <div className="min-h-screen bg-gray-950 px-4 md:px-8 pt-24 pb-20">
+      <div className="max-w-6xl mx-auto space-y-6 w-full">
+        {/* Fixed Top Header */}
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-xl border-b border-white/10 shadow-2xl">
+          <div className="max-w-7xl mx-auto flex items-center justify-between p-3 md:px-8 md:py-4">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/10 overflow-hidden shrink-0">
+                <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-150" />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-lg md:text-2xl font-black text-white tracking-tighter uppercase leading-none">Admin Panel</h1>
+                <p className="text-gray-400 text-[8px] md:text-xs uppercase tracking-widest font-medium mt-1">Gestione Utenze e Permessi</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter leading-none">Admin Panel</h1>
-              <p className="text-gray-400 text-[10px] md:text-xs uppercase tracking-widest font-medium mt-1">Gestione Utenze e Permessi</p>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={onNavigateToCalendar}
+                className="bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-1.5 py-1.5 px-3 md:py-2 md:px-4 rounded-lg shadow-lg shadow-blue-500/20 transition-all"
+              >
+                <Calendar size={16} />
+                <span className="font-bold text-xs md:text-sm">Torna a Gare</span>
+              </button>
             </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={onNavigateToCalendar}
-              className="btn btn-primary flex items-center gap-2 py-2.5 px-4 shadow-lg shadow-blue-500/20 md:px-6"
-            >
-              <Calendar size={18} />
-              <span className="font-bold text-sm md:text-base">Torna a Gare</span>
-            </button>
           </div>
         </div>
 
@@ -314,24 +315,23 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
         )}
       </div>
 
-      {/* Sticky Bottom Profile Bar */}
-      <div className="fixed bottom-0 left-0 right-0 glass-card !rounded-none !rounded-t-2xl !p-2 !mt-0 !bg-gray-950/95 border-t border-white/10 z-40 transform translate-y-0 transition-transform shadow-[0_-10px_30px_rgba(0,0,0,0.8)] flex items-center justify-center w-full">
-        <div className="w-full max-w-7xl flex items-center justify-between px-4 lg:px-8">
+      {/* Fixed Bottom Profile Bar */}
+      <div 
+        className="fixed bottom-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.8)]"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <div className="max-w-7xl mx-auto flex items-center justify-between p-2 md:px-8">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white border border-white/10 shadow-inner group shrink-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white border border-white/10 shadow-inner shrink-0">
               <span className="text-sm font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest leading-tight">Bentornato</span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-white leading-none">{userProfile?.first_name || 'Admin'}</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-white">{userProfile?.first_name || 'Admin'}</span>
             </div>
           </div>
-          
           <button 
             onClick={() => setShowLogoutConfirm(true)} 
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all border border-red-500/10 active:scale-95 shrink-0"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500/80 hover:text-red-400 hover:bg-red-500/20 transition-all active:scale-95 shrink-0"
             title="Esci dalla sessione"
           >
             <LogOut size={16} />
