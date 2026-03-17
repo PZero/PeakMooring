@@ -250,8 +250,14 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                       {activeEvents.length === 0 ? (
                         <tr><td colSpan={4} className="px-4 py-12 text-center text-gray-500 italic sm:col-span-7 landscape:col-span-7">Nessuna gara attiva</td></tr>
                       ) : (
-                        activeEvents.map(event => (
-                          <tr key={event.id} className="group hover:bg-white/[0.02] transition-colors">
+                        activeEvents.map(event => {
+                          const rowBgColor = 
+                            event.organization === 'FIN' ? 'bg-blue-100/50 hover:bg-blue-200/50' :
+                            event.organization === 'UISP' ? 'bg-green-100/50 hover:bg-green-200/50' :
+                            'bg-amber-100/50 hover:bg-amber-200/50';
+                          
+                          return (
+                            <tr key={event.id} className={`group transition-colors ${rowBgColor}`}>
                             <td className="px-1.5 md:px-4 py-3 md:py-4 border-r border-white/5 last:border-r-0">
                               <div className="font-bold text-white group-hover:text-blue-400 text-[12px] md:text-sm whitespace-normal break-words">{event.name}</div>
                             </td>
@@ -305,7 +311,8 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                               </div>
                             </td>
                           </tr>
-                        ))
+                          );
+                        })
                       )}
                     </tbody>
                   </table>
@@ -332,8 +339,14 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5 text-gray-500">
-                        {cancelledEvents.map(event => (
-                          <tr key={event.id} className="italic line-through decoration-gray-700">
+                        {cancelledEvents.map(event => {
+                          const rowBgColor = 
+                            event.organization === 'FIN' ? 'bg-blue-100/20 hover:bg-blue-200/20' :
+                            event.organization === 'UISP' ? 'bg-green-100/20 hover:bg-green-200/20' :
+                            'bg-amber-100/20 hover:bg-amber-200/20';
+
+                          return (
+                            <tr key={event.id} className={`italic line-through decoration-gray-400 transition-colors ${rowBgColor}`}>
                             <td className="px-1.5 md:px-4 py-4 border-r border-white/5 last:border-r-0 text-[12px] md:text-sm whitespace-normal break-words">{event.name}</td>
                             <td className="px-1.5 md:px-4 py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell landscape:table-cell">
                               <span className="px-2 py-0.5 rounded text-[10px] font-black border bg-gray-500/10 text-gray-500 border-gray-500/20">{event.organization}</span>
@@ -356,7 +369,8 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                               </div>
                             </td>
                           </tr>
-                        ))}
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
