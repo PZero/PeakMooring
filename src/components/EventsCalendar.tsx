@@ -147,8 +147,8 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
         {/* User Welcome Card (The First Card) */}
         <div className="glass-card p-6 flex flex-row items-center justify-between border-blue-500/20 shadow-xl shadow-blue-500/5 !mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
           <div className="flex items-center gap-5">
-            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-blue-400 border border-white/10 shadow-inner overflow-hidden group">
-              <img src="/logo.png" alt="Avatar" className="w-full h-full object-cover scale-150" />
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white border border-white/10 shadow-inner overflow-hidden group">
+              <span className="text-2xl font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
               <div className="text-xl font-medium text-gray-400">

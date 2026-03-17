@@ -74,13 +74,10 @@ function Auth({ onBack }: { onBack: () => void }) {
       <div className="gradient-bg opacity-50" />
       
       <div className="w-full max-w-[400px]">
-        {/* Logo/Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-2xl border border-white/10 mb-6 transform -rotate-3 hover:rotate-0 transition-all duration-300 overflow-hidden">
-            <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-150" />
-          </div>
+        {/* Header */}
+        <div className="text-center mb-6">
           <h2 className="text-3xl font-black tracking-tighter text-white uppercase">OpenWater Regs</h2>
-          <p className="text-blue-300/80 mt-2 font-medium">Calendario Gare Nuoto</p>
+          <p className="text-blue-300/80 mt-1 font-medium">Calendario Gare Nuoto</p>
         </div>
 
         <div className="glass-card !p-8 !mt-0 shadow-2xl border-white/5">
@@ -205,7 +202,7 @@ function Auth({ onBack }: { onBack: () => void }) {
             </button>
           </div>
 
-          <div className="mt-16 pt-12 border-t border-white/5 flex flex-col items-center gap-10">
+          <div className="mt-8 pt-6 border-t border-white/5 flex flex-col items-center gap-6">
             <button 
               onClick={() => {
                 setIsLogin(!isLogin);
@@ -220,7 +217,7 @@ function Auth({ onBack }: { onBack: () => void }) {
               )}
             </button>
             
-            <div className="pt-8 mt-4">
+            <div className="pt-2">
               <button 
                 onClick={onBack}
                 className="text-[10px] text-gray-500 hover:text-white transition-all uppercase tracking-[1.5em] font-black py-4 px-8 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-95 shadow-xl"
