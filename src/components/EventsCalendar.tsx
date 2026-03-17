@@ -141,50 +141,21 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
   const cancelledEvents = events.filter(e => e.status === 'cancelled');
 
   return (
-    <div className="min-h-screen bg-gray-950 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gray-950 flex flex-col pt-4 pb-24 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-6 w-full px-4 md:px-0 flex-1">
         
-        {/* User Welcome Card (The First Card) */}
-        <div className="glass-card p-6 flex flex-row items-center justify-between border-blue-500/20 shadow-xl shadow-blue-500/5 !mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white border border-white/10 shadow-inner overflow-hidden group">
-              <span className="text-2xl font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-              <div className="text-xl font-medium text-gray-400">
-                Bentornato, <span className="text-white font-black tracking-tight">{userProfile?.first_name || 'Atleta'}</span>
-              </div>
-              <button 
-                onClick={() => setShowProfile(true)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-blue-400 hover:bg-white/10 transition-all border border-transparent hover:border-blue-500/20 sm:ml-2 active:scale-95"
-                title="Modifica Nome"
-              >
-                <Edit2 size={20} />
-              </button>
-            </div>
-          </div>
-          
-          <button 
-            onClick={() => setShowLogoutConfirm(true)} 
-            className="w-14 h-14 flex items-center justify-center rounded-2xl bg-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all border border-red-500/10 active:scale-95 shadow-lg shadow-red-500/5"
-            title="Esci dalla sessione"
-          >
-            <LogOut size={28} />
-          </button>
-        </div>
-
-        {/* Header (Now Second) */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 glass-card p-6 md:p-8 sticky top-0 z-10">
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/10 overflow-hidden">
+        {/* Header - Compacted */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 md:p-6 sticky top-2 z-10 shadow-2xl border-white/10 mt-2">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/10 overflow-hidden shrink-0">
               <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-150" />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Calendario 2026</h1>
-              <p className="text-blue-300/60 font-medium uppercase tracking-widest text-xs">Open Water Swimming Season</p>
+              <h1 className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase leading-none">Calendario 2026</h1>
+              <p className="text-blue-300/60 font-medium uppercase tracking-widest text-[10px] md:text-xs mt-1">Open Water Swimming Season</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {isAdmin && onNavigateToAdmin && (
               <button onClick={onNavigateToAdmin} className="btn btn-outline flex items-center gap-2 py-3 px-5">
                 <Settings size={18} />
@@ -193,10 +164,10 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
             )}
             <button 
               onClick={() => { setEditingEvent(undefined); setShowForm(true); }}
-              className="btn btn-primary flex items-center gap-2 py-3 px-6 shadow-xl shadow-blue-500/20"
+              className="btn btn-primary flex items-center gap-2 py-2.5 px-4 shadow-lg shadow-blue-500/20 md:px-6"
             >
-              <Plus size={20} />
-              <span className="font-bold">Nuova Gara</span>
+              <Plus size={18} />
+              <span className="font-bold text-sm md:text-base">Nuova Gara</span>
             </button>
           </div>
         </div>
@@ -209,12 +180,19 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
           <>
             {/* Active Events */}
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-3 ml-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Gare Attive ({activeEvents.length})
-              </h2>
-              <div className="glass-card !p-0 overflow-hidden border-white/5 shadow-2xl">
-                <div className="overflow-x-auto">
+              <div className="flex items-center justify-between ml-1 mb-2">
+                <h2 className="text-lg md:text-xl font-bold text-white flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  Gare Attive ({activeEvents.length})
+                </h2>
+                <div className="md:hidden text-[10px] text-gray-500 uppercase tracking-widest flex items-center gap-1 animate-pulse">
+                  <span>Scorri</span> <span>→</span>
+                </div>
+              </div>
+              <div className="glass-card !p-0 overflow-hidden border-white/5 shadow-2xl relative">
+                {/* Scroll hint overlay */}
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-900 to-transparent pointer-events-none md:hidden z-10" />
+                <div className="overflow-x-auto pb-2 custom-scrollbar">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-white/5 border-b border-white/10">
@@ -339,7 +317,38 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
             )}
           </>
         )}
+      {/* Sticky Bottom Profile Bar */}
+      <div className="fixed bottom-0 left-0 right-0 glass-card !rounded-none !rounded-t-3xl !p-3 !mt-0 !bg-gray-950/90 border-t border-white/10 z-40 transform translate-y-0 transition-transform shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex items-center justify-center">
+        <div className="w-full max-w-7xl flex items-center justify-between px-2 md:px-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white border border-white/10 shadow-inner group shrink-0">
+              <span className="text-lg font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest leading-tight">Bentornato</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-white leading-none">{userProfile?.first_name || 'Atleta'}</span>
+                <button 
+                  onClick={() => setShowProfile(true)}
+                  className="w-6 h-6 flex items-center justify-center rounded-lg bg-white/5 text-gray-400 hover:text-blue-400 hover:bg-white/10 transition-all border border-transparent hover:border-blue-500/20 active:scale-95"
+                  title="Modifica Profilo"
+                >
+                  <Edit2 size={12} />
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => setShowLogoutConfirm(true)} 
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all border border-red-500/10 active:scale-95 shrink-0"
+            title="Esci dalla sessione"
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
       </div>
+    </div>
 
       {showForm && (
         <EventForm 
