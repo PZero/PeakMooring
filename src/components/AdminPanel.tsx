@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { CheckCircle, XCircle, Clock, LogOut, Calendar } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, LogOut, Calendar, Edit2 } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -17,6 +17,7 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
   const [loading, setLoading] = React.useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false);
   const [forgetMe, setForgetMe] = React.useState(false);
+  const [userProfile, setUserProfile] = React.useState<{ first_name: string | null, last_name: string | null } | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -33,6 +34,16 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
 
   React.useEffect(() => {
     fetchUsers();
+    
+    // Fetch current user profile for footer
+    const fetchCurrentUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase.from('profiles').select('first_name, last_name').eq('id', session.user.id).single();
+        if (profile) setUserProfile(profile);
+      }
+    };
+    fetchCurrentUser();
 
     // Set up Realtime subscription
     const channel = supabase
@@ -111,34 +122,27 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
   const rejectedUsers = users.filter(u => u.status === 'rejected');
 
   return (
-    <div className="min-h-screen bg-gray-950 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6">
+    <div className="min-h-screen bg-gray-950 flex flex-col pt-4 pb-24 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-6 w-full px-4 md:px-0 flex-1">
+        {/* Header - Compacted like EventsCalendar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 md:p-6 sticky top-2 z-10 shadow-2xl border-white/10 mt-2">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border border-white/10 shadow-lg overflow-hidden">
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border border-white/10 shadow-lg overflow-hidden shrink-0">
               <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-150" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white uppercase tracking-tighter">Admin Panel</h1>
-              <p className="text-gray-400 text-xs uppercase tracking-widest font-medium">Gestione Utenze e Permessi</p>
+              <h1 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter leading-none">Admin Panel</h1>
+              <p className="text-gray-400 text-[10px] md:text-xs uppercase tracking-widest font-medium mt-1">Gestione Utenze e Permessi</p>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
             <button 
               onClick={onNavigateToCalendar}
-              className="btn btn-primary flex items-center gap-2"
+              className="btn btn-primary flex items-center gap-2 py-2.5 px-4 shadow-lg shadow-blue-500/20 md:px-6"
             >
               <Calendar size={18} />
-              Vai al Calendario
-            </button>
-             <button 
-              onClick={() => setShowLogoutConfirm(true)}
-              className="btn btn-outline flex items-center gap-2"
-            >
-              <LogOut size={18} />
-              Esci
+              <span className="font-bold text-sm md:text-base">Torna a Gare</span>
             </button>
           </div>
         </div>
@@ -309,6 +313,32 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
           </div>
         )}
       </div>
+
+      {/* Sticky Bottom Profile Bar */}
+      <div className="fixed bottom-0 left-0 right-0 glass-card !rounded-none !rounded-t-2xl !p-2 !mt-0 !bg-gray-950/95 border-t border-white/10 z-40 transform translate-y-0 transition-transform shadow-[0_-10px_30px_rgba(0,0,0,0.8)] flex items-center justify-center w-full">
+        <div className="w-full max-w-7xl flex items-center justify-between px-4 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white border border-white/10 shadow-inner group shrink-0">
+              <span className="text-sm font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest leading-tight">Bentornato</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-white leading-none">{userProfile?.first_name || 'Admin'}</span>
+              </div>
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => setShowLogoutConfirm(true)} 
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all border border-red-500/10 active:scale-95 shrink-0"
+            title="Esci dalla sessione"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 }

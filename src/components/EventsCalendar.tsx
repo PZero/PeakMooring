@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { Calendar, Plus, LogOut, Settings, Trash2, Edit2, ExternalLink, AlignLeft, Clock, RotateCcw } from 'lucide-react';
+import { Calendar, Plus, LogOut, Settings, Trash2, Edit2, ExternalLink, AlignLeft, Clock, RotateCcw, Smartphone } from 'lucide-react';
 
 import EventForm from './EventForm';
 import ProfileModal from './ProfileModal';
@@ -34,6 +34,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
   const [showProfile, setShowProfile] = React.useState(false);
   const [editingEvent, setEditingEvent] = React.useState<Event | undefined>(undefined);
   const [userProfile, setUserProfile] = React.useState<{ first_name: string | null, last_name: string | null } | null>(null);
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -71,6 +72,23 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
   React.useEffect(() => {
     checkUser();
     fetchEvents();
+
+    const checkOrientation = () => {
+      if (window.innerWidth > window.innerHeight && window.innerWidth < 1024) {
+        setIsFullscreen(true);
+      } else {
+        setIsFullscreen(false);
+      }
+    };
+
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+    checkOrientation(); // initial check
+
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -140,6 +158,10 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
   const activeEvents = events.filter(e => e.status !== 'cancelled');
   const cancelledEvents = events.filter(e => e.status === 'cancelled');
 
+  const formatDateShort = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' }).replace('.', '');
+  };
+
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col pt-4 pb-24 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6 w-full px-4 md:px-0 flex-1">
@@ -189,19 +211,34 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                   <span>Scorri</span> <span>→</span>
                 </div>
               </div>
-              <div className="glass-card !p-0 overflow-hidden border-white/5 shadow-2xl relative">
+              <div className={`glass-card !p-0 overflow-hidden border-white/5 shadow-2xl relative transition-all duration-300 ${isFullscreen ? 'fullscreen-landscape' : ''}`}>
+                
+                {/* Header specifically for fullscreen mode to allow exit or just show title */}
+                {isFullscreen && (
+                  <div className="flex items-center justify-between p-4 border-b border-white/10 bg-gray-900">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      Gare Attive ({activeEvents.length})
+                    </h2>
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <Smartphone size={16} /> <span className="uppercase tracking-widest text-[10px]">Ruota per uscire</span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Scroll hint overlay */}
-                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-900 to-transparent pointer-events-none md:hidden z-10" />
+                {!isFullscreen && <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-900 to-transparent pointer-events-none md:hidden z-10" />}
+                
                 <div className="overflow-x-auto pb-2 custom-scrollbar">
-                  <table className="w-full text-left border-collapse">
+                  <table className="w-full text-left border-collapse table-nowrap">
                     <thead>
                       <tr className="bg-white/5 border-b border-white/10">
-                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Gara / Org</th>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Data Gara</th>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Scadenza Iscrizione</th>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Distanze / Info</th>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Ultima Modifica</th>
-                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Azioni</th>
+                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Gara / Org</th>
+                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Data Gara</th>
+                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Scadenza Is.</th>
+                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Distanze / Info</th>
+                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Modificato Da</th>
+                        <th className="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Azioni</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
@@ -212,7 +249,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                           <tr key={event.id} className="group hover:bg-white/[0.02] transition-colors">
                             <td className="px-6 py-5">
                               <div className="font-bold text-white group-hover:text-blue-400">{event.name}</div>
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-black border ${
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-black border mt-1 block w-max ${
                                 event.organization === 'FIN' ? 'bg-blue-500/20 text-blue-400 border-blue-500/20' :
                                 event.organization === 'UISP' ? 'bg-orange-500/20 text-orange-400 border-orange-500/20' :
                                 'bg-purple-500/20 text-purple-400 border-purple-500/20'
@@ -220,21 +257,21 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                                 {event.organization}
                               </span>
                             </td>
-                            <td className="px-6 py-5">
-                              <div className="flex items-center gap-2 text-gray-300 font-bold">
+                            <td className="px-5 py-4">
+                              <div className="flex items-center gap-2 text-gray-300 font-bold capitalize">
                                 <Calendar size={14} className="text-gray-500" />
-                                {new Date(event.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}
+                                {formatDateShort(event.date)}
                               </div>
                             </td>
-                            <td className="px-6 py-5">
-                              <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm ${getDeadlineStyle(event.registration_deadline)}`}>
+                            <td className="px-5 py-4">
+                              <div className={`inline-flex items-center gap-2 px-2 py-1 rounded-lg font-bold text-sm capitalize ${getDeadlineStyle(event.registration_deadline)}`}>
                                 <Clock size={14} />
-                                {new Date(event.registration_deadline).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}
+                                {formatDateShort(event.registration_deadline)}
                               </div>
                             </td>
-                            <td className="px-6 py-5">
-                              <div className="space-y-1.5">
-                                {event.distances && <div className="text-xs text-gray-300">{event.distances}</div>}
+                            <td className="px-5 py-4">
+                              <div className="space-y-1.5 max-w-[200px] whitespace-normal">
+                                {event.distances && <div className="text-xs text-gray-300 leading-tight">{event.distances}</div>}
                                 <div className="flex gap-3">
                                   {event.event_link && <a href={event.event_link} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-lg transition-all" title="Sito Gara"><ExternalLink size={16} /></a>}
                                   {event.results_link && (
@@ -248,16 +285,16 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-5">
+                            <td className="px-5 py-4">
                               <div className="text-[10px] text-gray-500">
-                                <div>{new Date(event.updated_at).toLocaleString()}</div>
+                                <div>{formatDateShort(event.updated_at)}</div>
                                 <div className="text-blue-400 font-bold truncate max-w-[100px]">{event.updater_email}</div>
                               </div>
                             </td>
-                            <td className="px-6 py-5 text-right">
-                              <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => { setEditingEvent(event); setShowForm(true); }} className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white"><Edit2 size={16} /></button>
-                                <button onClick={() => { if(confirm('Annullare?')) handleCancelEvent(event.id); }} className="p-2 hover:bg-red-500/10 rounded-lg text-red-500/60 hover:text-red-400"><Trash2 size={16} /></button>
+                            <td className="px-5 py-4 text-right">
+                              <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onClick={() => { setEditingEvent(event); setShowForm(true); }} className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white"><Edit2 size={16} /></button>
+                                <button onClick={() => { if(confirm('Annullare?')) handleCancelEvent(event.id); }} className="p-1.5 hover:bg-red-500/10 rounded-lg text-red-500/60 hover:text-red-400"><Trash2 size={16} /></button>
                               </div>
                             </td>
                           </tr>
@@ -318,11 +355,11 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
           </>
         )}
       {/* Sticky Bottom Profile Bar */}
-      <div className="fixed bottom-0 left-0 right-0 glass-card !rounded-none !rounded-t-3xl !p-3 !mt-0 !bg-gray-950/90 border-t border-white/10 z-40 transform translate-y-0 transition-transform shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex items-center justify-center">
-        <div className="w-full max-w-7xl flex items-center justify-between px-2 md:px-4">
+      <div className="fixed bottom-0 left-0 right-0 glass-card !rounded-none !rounded-t-2xl !p-2 !mt-0 !bg-gray-950/95 border-t border-white/10 z-40 transform translate-y-0 transition-transform shadow-[0_-10px_30px_rgba(0,0,0,0.8)] flex items-center justify-center w-full">
+        <div className="w-full max-w-7xl flex items-center justify-between px-4 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white border border-white/10 shadow-inner group shrink-0">
-              <span className="text-lg font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white border border-white/10 shadow-inner group shrink-0">
+              <span className="text-sm font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
             </div>
             <div className="flex flex-col">
               <span className="text-[10px] text-gray-500 uppercase tracking-widest leading-tight">Bentornato</span>
@@ -341,10 +378,10 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
           
           <button 
             onClick={() => setShowLogoutConfirm(true)} 
-            className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all border border-red-500/10 active:scale-95 shrink-0"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all border border-red-500/10 active:scale-95 shrink-0"
             title="Esci dalla sessione"
           >
-            <LogOut size={18} />
+            <LogOut size={16} />
           </button>
         </div>
       </div>
