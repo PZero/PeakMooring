@@ -116,8 +116,8 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 overflow-hidden">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border border-white/10 shadow-lg overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-150" />
             </div>
             <div>
               <h1 className="text-2xl font-black text-white uppercase tracking-tighter">Admin Panel</h1>

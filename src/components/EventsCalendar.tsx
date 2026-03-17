@@ -144,39 +144,11 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
     <div className="min-h-screen bg-gray-950 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 glass-card p-6 md:p-8 sticky top-0 z-10">
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center shadow-lg border border-white/10 overflow-hidden">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Calendario 2026</h1>
-              <p className="text-blue-300/60 font-medium uppercase tracking-widest text-xs">Open Water Swimming Season</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            {isAdmin && onNavigateToAdmin && (
-              <button onClick={onNavigateToAdmin} className="btn btn-outline flex items-center gap-2 py-3 px-5">
-                <Settings size={18} />
-                <span className="hidden sm:inline font-bold">Admin</span>
-              </button>
-            )}
-            <button 
-              onClick={() => { setEditingEvent(undefined); setShowForm(true); }}
-              className="btn btn-primary flex items-center gap-2 py-3 px-6 shadow-xl shadow-blue-500/20"
-            >
-              <Plus size={20} />
-              <span className="font-bold">Nuova Gara</span>
-            </button>
-          </div>
-        </div>
-
         {/* User Welcome Card (The First Card) */}
         <div className="glass-card p-6 flex flex-row items-center justify-between border-blue-500/20 shadow-xl shadow-blue-500/5 !mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
           <div className="flex items-center gap-5">
-            <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-blue-400 border border-white/10 shadow-inner overflow-hidden group">
-              <img src="/logo.png" alt="Avatar" className="w-full h-full object-cover p-2" />
+            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-blue-400 border border-white/10 shadow-inner overflow-hidden group">
+              <img src="/logo.png" alt="Avatar" className="w-full h-full object-cover scale-150" />
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
               <div className="text-xl font-medium text-gray-400">
@@ -199,6 +171,34 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
           >
             <LogOut size={28} />
           </button>
+        </div>
+
+        {/* Header (Now Second) */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 glass-card p-6 md:p-8 sticky top-0 z-10">
+          <div className="flex items-center gap-5">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/10 overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-150" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Calendario 2026</h1>
+              <p className="text-blue-300/60 font-medium uppercase tracking-widest text-xs">Open Water Swimming Season</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            {isAdmin && onNavigateToAdmin && (
+              <button onClick={onNavigateToAdmin} className="btn btn-outline flex items-center gap-2 py-3 px-5">
+                <Settings size={18} />
+                <span className="hidden sm:inline font-bold">Admin</span>
+              </button>
+            )}
+            <button 
+              onClick={() => { setEditingEvent(undefined); setShowForm(true); }}
+              className="btn btn-primary flex items-center gap-2 py-3 px-6 shadow-xl shadow-blue-500/20"
+            >
+              <Plus size={20} />
+              <span className="font-bold">Nuova Gara</span>
+            </button>
+          </div>
         </div>
 
         {loading ? (

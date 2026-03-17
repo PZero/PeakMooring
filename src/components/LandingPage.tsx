@@ -5,14 +5,9 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
     <div className="min-h-screen">
       <div className="gradient-bg" />
       
-      <header className="container py-10">
-        <nav className="flex flex-col items-center justify-center gap-4">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center shadow-2xl border border-white/10 overflow-hidden">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
-            </div>
-            <span className="text-2xl font-black text-white tracking-tighter uppercase">OpenWater Regs</span>
-          </div>
+      <header className="container py-12">
+        <nav className="flex flex-col items-center justify-center">
+          <span className="text-3xl font-black text-white tracking-tighter uppercase">OpenWater Regs</span>
         </nav>
       </header>
 
