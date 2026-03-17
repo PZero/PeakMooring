@@ -252,16 +252,16 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                       ) : (
                         activeEvents.map(event => {
                           const rowBgColor = 
-                            event.organization === 'FIN' ? 'bg-blue-100/50 hover:bg-blue-200/50' :
-                            event.organization === 'UISP' ? 'bg-green-100/50 hover:bg-green-200/50' :
-                            'bg-amber-100/50 hover:bg-amber-200/50';
+                            event.organization === 'FIN' ? 'bg-[#e0f7ff] hover:bg-[#d0f0ff]' :
+                            event.organization === 'UISP' ? 'bg-[#e7f9ee] hover:bg-[#dbf3e4]' :
+                            'bg-[#fff7e6] hover:bg-[#ffefcc]';
                           
                           return (
-                            <tr key={event.id} className={`group transition-colors ${rowBgColor}`}>
-                            <td className="px-1.5 md:px-4 py-3 md:py-4 border-r border-white/5 last:border-r-0">
+                            <tr key={event.id} className={`group transition-colors`}>
+                            <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 ${rowBgColor}`}>
                               <div className="font-bold text-white group-hover:text-blue-400 text-[12px] md:text-sm whitespace-normal break-words">{event.name}</div>
                             </td>
-                            <td className="px-1.5 md:px-4 py-3 md:py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell landscape:table-cell">
+                            <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
                               <span className={`px-2 py-0.5 rounded text-[10px] font-black border w-max ${
                                 event.organization === 'FIN' ? 'bg-blue-500/20 text-blue-400 border-blue-500/20' :
                                 event.organization === 'UISP' ? 'bg-orange-500/20 text-orange-400 border-orange-500/20' :
@@ -270,19 +270,19 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                                 {event.organization}
                               </span>
                             </td>
-                            <td className="px-1.5 md:px-4 py-3 md:py-4 border-r border-white/5 last:border-r-0 whitespace-nowrap">
+                            <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 whitespace-nowrap ${rowBgColor}`}>
                               <div className="flex items-center gap-1 text-gray-300 font-bold capitalize text-[12px] md:text-sm">
                                 <Calendar size={12} className="text-gray-500" />
                                 {formatDateShort(event.date)}
                               </div>
                             </td>
-                            <td className="px-1.5 md:px-4 py-3 md:py-4 border-r border-white/5 last:border-r-0 whitespace-nowrap">
+                            <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 whitespace-nowrap ${rowBgColor}`}>
                               <div className={`inline-flex items-center gap-1 px-1.5 py-1 rounded-lg font-bold text-[10px] md:text-sm capitalize ${getDeadlineStyle(event.registration_deadline)}`}>
                                 <Clock size={10} />
                                 {formatDateShort(event.registration_deadline)}
                               </div>
                             </td>
-                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell landscape:table-cell">
+                            <td className={`px-1.5 md:px-5 py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
                               <div className="space-y-1.5 max-w-[200px] whitespace-normal">
                                 {event.distances && <div className="text-xs text-gray-300 leading-tight">{event.distances}</div>}
                                 <div className="flex gap-3">
@@ -298,13 +298,13 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                                 </div>
                               </div>
                             </td>
-                            <td className="px-5 py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell landscape:table-cell">
+                            <td className={`px-1.5 md:px-5 py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
                               <div className="text-[10px] text-gray-500">
                                 <div>{formatDateShort(event.updated_at)}</div>
                                 <div className="text-blue-400 font-bold truncate max-w-[100px]">{event.updater_email}</div>
                               </div>
                             </td>
-                            <td className="px-1.5 md:px-5 py-3 md:py-4 text-right border-l border-white/5">
+                            <td className={`px-1.5 md:px-5 py-3 md:py-4 text-right border-l border-black/5 ${rowBgColor}`}>
                               <div className="flex justify-end gap-1 opacity-100 transition-opacity">
                                 <button onClick={() => { setEditingEvent(event); setShowForm(true); }} className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white"><Edit2 size={16} /></button>
                                 <button onClick={() => { if(confirm('Annullare?')) handleCancelEvent(event.id); }} className="p-1.5 hover:bg-red-500/10 rounded-lg text-red-500/60 hover:text-red-400"><Trash2 size={16} /></button>
@@ -341,18 +341,18 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                       <tbody className="divide-y divide-white/5 text-gray-500">
                         {cancelledEvents.map(event => {
                           const rowBgColor = 
-                            event.organization === 'FIN' ? 'bg-blue-100/20 hover:bg-blue-200/20' :
-                            event.organization === 'UISP' ? 'bg-green-100/20 hover:bg-green-200/20' :
-                            'bg-amber-100/20 hover:bg-amber-200/20';
+                            event.organization === 'FIN' ? 'bg-[#f0faff]' :
+                            event.organization === 'UISP' ? 'bg-[#f0fdf4]' :
+                            'bg-[#fffbeb]';
 
                           return (
-                            <tr key={event.id} className={`italic line-through decoration-gray-400 transition-colors ${rowBgColor}`}>
-                            <td className="px-1.5 md:px-4 py-4 border-r border-white/5 last:border-r-0 text-[12px] md:text-sm whitespace-normal break-words">{event.name}</td>
-                            <td className="px-1.5 md:px-4 py-4 border-r border-white/5 last:border-r-0 hidden sm:table-cell landscape:table-cell">
+                            <tr key={event.id} className={`italic line-through decoration-gray-400 transition-colors`}>
+                            <td className={`px-1.5 md:px-4 py-4 border-r border-black/5 last:border-r-0 text-[12px] md:text-sm whitespace-normal break-words ${rowBgColor}`}>{event.name}</td>
+                            <td className={`px-1.5 md:px-4 py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
                               <span className="px-2 py-0.5 rounded text-[10px] font-black border bg-gray-500/10 text-gray-500 border-gray-500/20">{event.organization}</span>
                             </td>
-                            <td className="px-1.5 md:px-4 py-4 border-r border-white/5 last:border-r-0 text-[12px] md:text-sm whitespace-nowrap">{new Date(event.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}</td>
-                            <td className="px-1.5 md:px-6 py-4 text-right border-l border-white/5">
+                            <td className={`px-1.5 md:px-4 py-4 border-r border-black/5 last:border-r-0 text-[12px] md:text-sm whitespace-nowrap ${rowBgColor}`}>{new Date(event.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}</td>
+                            <td className={`px-1.5 md:px-6 py-4 text-right border-l border-black/5 ${rowBgColor}`}>
                               <div className="flex items-center justify-end gap-3">
                                 <button onClick={() => handleRestoreEvent(event.id)} className="text-blue-500/50 hover:text-blue-400 no-underline italic flex items-center gap-1">
                                   <RotateCcw size={14} /> Ripristina
