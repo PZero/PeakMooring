@@ -92,7 +92,8 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
   };
 
   const pendingUsers = users.filter(u => u.status === 'pending');
-  const otherUsers = users.filter(u => u.status !== 'pending');
+  const approvedUsers = users.filter(u => u.status === 'approved');
+  const rejectedUsers = users.filter(u => u.status === 'rejected');
 
   return (
     <div className="min-h-screen bg-gray-950 p-4 md:p-8">
@@ -139,7 +140,7 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Clock className="text-yellow-500" size={20} />
-                In attesa di approvazione ({pendingUsers.length})
+                In attesa ({pendingUsers.length})
               </h2>
               
               {pendingUsers.length === 0 ? (
@@ -151,10 +152,12 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
                   <div key={user.id} className="glass-card p-6 border-l-4 border-l-yellow-500">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="font-semibold text-white text-lg">{user.first_name} {user.last_name || '(Cognome mancante)'}</h3>
-                        <p className="text-gray-400 text-sm">{user.email}</p>
+                        <h3 className="font-semibold text-white text-lg truncate max-w-[200px] sm:max-w-none">
+                          {user.first_name} {user.last_name || '(Cognome mancante)'}
+                        </h3>
+                        <p className="text-gray-400 text-sm truncate max-w-[200px] sm:max-w-none">{user.email}</p>
                       </div>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 shrink-0">
                         {new Date(user.created_at).toLocaleDateString()}
                       </span>
                     </div>
@@ -178,61 +181,90 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
               )}
             </div>
 
-            {/* Managed Users Column */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Users className="text-blue-500" size={20} />
-                Utenti Gestiti ({otherUsers.length})
-              </h2>
+            {/* Approved and Rejected Columns */}
+            <div className="space-y-8">
               
-              <div className="glass-card overflow-hidden">
-                {otherUsers.length === 0 ? (
-                  <div className="p-8 text-center text-gray-400">
-                    Nessun utente gestito
-                  </div>
-                ) : (
-                  <ul className="divide-y divide-white/10">
-                    {otherUsers.map(user => (
-                      <li key={user.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-white truncate">{user.first_name} {user.last_name}</p>
-                          <p className="text-sm text-gray-400 truncate">{user.email}</p>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-3 shrink-0">
-                          {/* Admin Delegation Toggle */}
-                          {user.status === 'approved' && (
-                            <label className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
+              {/* Approved Users */}
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <CheckCircle className="text-green-500" size={20} />
+                  Approvati ({approvedUsers.length})
+                </h2>
+                
+                <div className="glass-card overflow-hidden">
+                  {approvedUsers.length === 0 ? (
+                    <div className="p-8 text-center text-gray-400">
+                      Nessun utente approvato
+                    </div>
+                  ) : (
+                    <ul className="divide-y divide-white/10">
+                      {approvedUsers.map(user => (
+                        <li key={user.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-white truncate">{user.first_name} {user.last_name}</p>
+                            <p className="text-sm text-gray-400 truncate">{user.email}</p>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            {/* Delegation UI */}
+                            <label className="flex items-center gap-2 bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 cursor-pointer hover:bg-blue-500/20 transition-colors group">
                               <input 
                                 type="checkbox" 
                                 checked={user.is_admin}
                                 onChange={(e) => handleAdminToggle(user.id, e.target.checked)}
                                 className="w-4 h-4 rounded border-white/10 bg-gray-900 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-950"
                               />
-                              <span className="text-xs font-semibold text-gray-300">Admin</span>
+                              <span className="text-xs font-bold text-blue-400 group-hover:text-blue-300">ADMIN</span>
                             </label>
-                          )}
-
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
-                            user.status === 'approved' 
-                              ? 'bg-green-500/10 text-green-400 border-green-500/20' 
-                              : 'bg-red-500/10 text-red-400 border-red-500/20'
-                          }`}>
-                            {user.status === 'approved' ? 'Approvato' : 'Rifiutato'}
-                          </span>
-                          
-                          <button 
-                            onClick={() => handleStatusChange(user.id, user.status === 'approved' ? 'rejected' : 'approved')}
-                            className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
-                            title={user.status === 'approved' ? 'Revoca accesso' : 'Concedi accesso'}
-                          >
-                            {user.status === 'approved' ? <XCircle size={16} /> : <CheckCircle size={16} />}
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                            
+                            <button 
+                              onClick={() => handleStatusChange(user.id, 'rejected')}
+                              className="p-2 hover:bg-red-500/10 rounded-lg text-gray-500 hover:text-red-400 transition-colors"
+                              title="Revoca accesso"
+                            >
+                              <XCircle size={18} />
+                            </button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
+
+              {/* Rejected Users */}
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <XCircle className="text-red-500" size={20} />
+                  Rifiutati ({rejectedUsers.length})
+                </h2>
+                
+                <div className="glass-card overflow-hidden opacity-75">
+                  {rejectedUsers.length === 0 ? (
+                    <div className="p-8 text-center text-gray-400">
+                      Nessun utente rifiutato
+                    </div>
+                  ) : (
+                    <ul className="divide-y divide-white/10">
+                      {rejectedUsers.map(user => (
+                        <li key={user.id} className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-300 truncate">{user.first_name} {user.last_name}</p>
+                            <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                          </div>
+                          <button 
+                            onClick={() => handleStatusChange(user.id, 'approved')}
+                            className="p-2 hover:bg-green-500/10 rounded-lg text-gray-500 hover:text-green-400 transition-colors"
+                            title="Riammetti utente"
+                          >
+                            <CheckCircle size={18} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+
             </div>
 
           </div>

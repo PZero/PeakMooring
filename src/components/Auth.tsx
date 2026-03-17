@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { supabase } from '../lib/supabase';
-import { Waves, Mail, Facebook, Chrome, Lock, User } from 'lucide-react';
+import { Waves, Mail, Chrome, Lock, User } from 'lucide-react';
 
 function Auth({ onBack }: { onBack: () => void }) {
   const [isLogin, setIsLogin] = React.useState(true);
@@ -36,13 +36,16 @@ function Auth({ onBack }: { onBack: () => void }) {
         }
       });
       if (error) setMessage({ type: 'error', text: error.message });
-      else setMessage({ type: 'success', text: 'Registrazione completata! Puoi effettuare il login.' });
+      else setMessage({ 
+        type: 'success', 
+        text: 'Registrazione completata! Riceverai un\'email da "Supabase Auth": clicca sul link di conferma per attivare l\'account prima di accedere.' 
+      });
     }
     
     setLoading(false);
   };
 
-  const handleOAuthLogin = async (provider: 'google' | 'facebook') => {
+  const handleOAuthLogin = async (provider: 'google') => {
     const { error } = await supabase.auth.signInWithOAuth({ provider });
     if (error) setMessage({ type: 'error', text: error.message });
   };
@@ -147,38 +150,34 @@ function Auth({ onBack }: { onBack: () => void }) {
 
           <div className="social-divider">oppure continua con</div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3">
             <button 
               onClick={() => handleOAuthLogin('google')}
-              className="btn btn-outline flex items-center justify-center gap-2 py-2.5 text-sm hover:bg-white/5 transition-colors"
+              className="btn btn-outline flex items-center justify-center gap-2 py-3 text-sm hover:bg-white/5 transition-colors"
             >
-              <Chrome size={18} /> Google
-            </button>
-            <button 
-              onClick={() => handleOAuthLogin('facebook')}
-              className="btn btn-outline flex items-center justify-center gap-2 py-2.5 text-sm hover:bg-white/5 transition-colors"
-            >
-              <Facebook size={18} /> Facebook
+              <Chrome size={20} className="text-blue-400" />
+              <span>Continua con Google</span>
             </button>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-white/5 flex flex-col items-center gap-3">
+          <div className="mt-10 pt-8 border-t border-white/5 flex flex-col items-center gap-6">
             <button 
               onClick={() => {
                 setIsLogin(!isLogin);
                 setMessage(null);
               }}
-              className="auth-footer-link font-medium"
+              className="auth-footer-link text-sm"
             >
               {isLogin ? (
-                <>Non hai un account? <span className="text-blue-400">Registrati</span></>
+                <>Non hai un account? <span className="text-blue-400 font-bold hover:underline ml-1">Registrati</span></>
               ) : (
-                <>Hai già un account? <span className="text-blue-400">Accedi</span></>
+                <>Hai già un account? <span className="text-blue-400 font-bold hover:underline ml-1">Accedi</span></>
               )}
             </button>
+            
             <button 
               onClick={onBack}
-              className="text-xs text-gray-600 hover:text-gray-400 transition-colors uppercase tracking-widest font-semibold mt-2"
+              className="text-[10px] text-gray-500 hover:text-white transition-all uppercase tracking-[0.2em] font-black py-2 px-4 rounded-lg bg-white/5 hover:bg-white/10"
             >
               ← Torna alla Home
             </button>
