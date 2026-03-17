@@ -27,6 +27,8 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
   const [loading, setLoading] = React.useState(true);
   const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
   const [isAdmin, setIsAdmin] = React.useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false);
+  const [forgetMe, setForgetMe] = React.useState(false);
   
   const [showForm, setShowForm] = React.useState(false);
   const [showProfile, setShowProfile] = React.useState(false);
@@ -73,6 +75,14 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+  };
+
+  const handleEnhancedLogout = async () => {
+    if (forgetMe) {
+      localStorage.removeItem('peak_mooring_email');
+      localStorage.setItem('peak_mooring_remember', 'false');
+    }
+    await handleLogout();
   };
 
   const handleSaved = () => {
@@ -170,7 +180,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
               {userProfile?.first_name ? userProfile.first_name[0].toUpperCase() : <User size={18} />}
             </button>
 
-            <button onClick={handleLogout} className="btn btn-outline p-3 hover:bg-red-500/10 hover:text-red-400" title="Esci">
+            <button onClick={() => setShowLogoutConfirm(true)} className="btn btn-outline p-3 hover:bg-red-500/10 hover:text-red-400" title="Esci">
               <LogOut size={20} />
             </button>
           </div>
@@ -334,6 +344,30 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
             fetchEvents(); // Refresh to update "Ultima Modifica" names
           }}
         />
+      )}
+
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="glass-card w-full max-w-sm p-8 animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-white mb-2">Conferma Logout</h3>
+            <p className="text-gray-400 mb-8">Sei sicuro di voler uscire dalla sessione?</p>
+            
+            <div 
+              className="flex items-center gap-3 mb-8 p-4 bg-white/5 rounded-xl border border-white/10 cursor-pointer group hover:bg-white/10 transition-all"
+              onClick={() => setForgetMe(!forgetMe)}
+            >
+              <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${forgetMe ? 'bg-red-500 border-red-500' : 'bg-white/5 border-white/10'}`}>
+                {forgetMe && <div className="w-2 h-2 rounded-full bg-white" />}
+              </div>
+              <span className="text-sm text-gray-300 group-hover:text-white transition-colors">Dimenticami su questo dispositivo</span>
+            </div>
+
+            <div className="flex gap-4">
+              <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 btn btn-outline py-3">Annulla</button>
+              <button onClick={handleEnhancedLogout} className="flex-1 btn btn-primary bg-red-600 hover:bg-red-500 border-red-600 hover:border-red-500 py-3 shadow-lg shadow-red-600/20">Esci</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

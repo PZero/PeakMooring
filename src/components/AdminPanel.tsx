@@ -15,6 +15,8 @@ interface Profile {
 function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void }) {
   const [users, setUsers] = React.useState<Profile[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false);
+  const [forgetMe, setForgetMe] = React.useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -95,6 +97,14 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
     await supabase.auth.signOut();
   };
 
+  const handleEnhancedLogout = async () => {
+    if (forgetMe) {
+      localStorage.removeItem('peak_mooring_email');
+      localStorage.setItem('peak_mooring_remember', 'false');
+    }
+    await handleLogout();
+  };
+
   const pendingUsers = users.filter(u => u.status === 'pending');
   const approvedUsers = users.filter(u => u.status === 'approved');
   const rejectedUsers = users.filter(u => u.status === 'rejected');
@@ -122,8 +132,8 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
               <Calendar size={18} />
               Vai al Calendario
             </button>
-            <button 
-              onClick={handleLogout}
+             <button 
+              onClick={() => setShowLogoutConfirm(true)}
               className="btn btn-outline flex items-center gap-2"
             >
               <LogOut size={18} />
@@ -131,6 +141,30 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
             </button>
           </div>
         </div>
+
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="glass-card w-full max-w-sm p-8 animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
+              <h3 className="text-xl font-bold text-white mb-2">Conferma Logout</h3>
+              <p className="text-gray-400 mb-8">Sei sicuro di voler uscire dalla sessione?</p>
+              
+              <div 
+                className="flex items-center gap-3 mb-8 p-4 bg-white/5 rounded-xl border border-white/10 cursor-pointer group hover:bg-white/10 transition-all"
+                onClick={() => setForgetMe(!forgetMe)}
+              >
+                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${forgetMe ? 'bg-red-500 border-red-500' : 'bg-white/5 border-white/10'}`}>
+                  {forgetMe && <div className="w-2 h-2 rounded-full bg-white" />}
+                </div>
+                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">Dimenticami su questo dispositivo</span>
+              </div>
+
+              <div className="flex gap-4">
+                <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 btn btn-outline py-3">Annulla</button>
+                <button onClick={handleEnhancedLogout} className="flex-1 btn btn-primary bg-red-600 hover:bg-red-500 border-red-600 hover:border-red-500 py-3 shadow-lg shadow-red-600/20">Esci</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Content */}
         {loading ? (

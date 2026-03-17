@@ -6,15 +6,34 @@ function Auth({ onBack }: { onBack: () => void }) {
   const [isLogin, setIsLogin] = React.useState(true);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [rememberMe, setRememberMe] = React.useState(true);
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState<{ type: 'error' | 'success', text: string } | null>(null);
 
+  React.useEffect(() => {
+    const savedEmail = localStorage.getItem('peak_mooring_email');
+    const remember = localStorage.getItem('peak_mooring_remember') !== 'false';
+    if (savedEmail && remember) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
+
+    // Persist or clear email based on rememberMe
+    if (rememberMe) {
+      localStorage.setItem('peak_mooring_email', email);
+      localStorage.setItem('peak_mooring_remember', 'true');
+    } else {
+      localStorage.removeItem('peak_mooring_email');
+      localStorage.setItem('peak_mooring_remember', 'false');
+    }
 
     if (isLogin) {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -138,6 +157,15 @@ function Auth({ onBack }: { onBack: () => void }) {
                 />
               </div>
             </div>
+
+            {isLogin && (
+              <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setRememberMe(!rememberMe)}>
+                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${rememberMe ? 'bg-blue-500 border-blue-500' : 'bg-white/5 border-white/10'}`}>
+                  {rememberMe && <div className="w-2 h-2 rounded-full bg-white" />}
+                </div>
+                <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors select-none">Recordami su questo dispositivo</span>
+              </div>
+            )}
 
             <button 
               type="submit" 
