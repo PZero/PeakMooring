@@ -5,7 +5,7 @@ interface Event {
   name: string;
   date: string;
   organization: 'FIN' | 'UISP' | 'ALTRO';
-  registration_deadline: string;
+  registration_deadline: string | null;
   event_link: string | null;
   distances: string | null;
   notes: string | null;
@@ -78,7 +78,7 @@ export default function EventDetailsModal({ event, onClose }: EventDetailsModalP
                   <Clock size={16} /> Scadenza Iscrizioni
                 </div>
                 <div className="text-lg font-bold text-red-400 capitalize">
-                  {formatDate(event.registration_deadline)}
+                  {event.registration_deadline ? formatDate(event.registration_deadline) : 'Non specificata'}
                 </div>
               </div>
 

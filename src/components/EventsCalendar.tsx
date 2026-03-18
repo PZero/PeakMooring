@@ -11,7 +11,7 @@ interface Event {
   name: string;
   date: string;
   organization: 'FIN' | 'UISP' | 'ALTRO';
-  registration_deadline: string;
+  registration_deadline: string | null;
   event_link: string | null;
   distances: string | null;
   notes: string | null;
@@ -51,8 +51,8 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
       })) as Event[];
 
       formattedEvents.sort((a, b) => {
-        const dateA = new Date(a.registration_deadline).getTime();
-        const dateB = new Date(b.registration_deadline).getTime();
+        const dateA = a.registration_deadline ? new Date(a.registration_deadline).getTime() : new Date(a.date).getTime();
+        const dateB = b.registration_deadline ? new Date(b.registration_deadline).getTime() : new Date(b.date).getTime();
         return dateA - dateB;
       });
 
@@ -144,7 +144,8 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
     else alert('Errore durante l\'eliminazione definitiva');
   };
 
-  const getDeadlineStyle = (deadlineString: string) => {
+  const getDeadlineStyle = (deadlineString: string | null) => {
+    if (!deadlineString) return 'text-slate-500 font-semibold';
     const deadline = new Date(deadlineString);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -283,7 +284,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                             <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 whitespace-nowrap ${rowBgColor}`}>
                               <div className={`inline-flex items-center gap-1 px-1.5 py-1 rounded-lg font-bold text-[10px] md:text-sm capitalize ${getDeadlineStyle(event.registration_deadline)}`}>
                                 <Clock size={10} />
-                                {formatDateShort(event.registration_deadline)}
+                                {event.registration_deadline ? formatDateShort(event.registration_deadline) : '-'}
                               </div>
                             </td>
                             <td className={`px-1.5 md:px-5 py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>

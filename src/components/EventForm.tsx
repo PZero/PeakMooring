@@ -7,7 +7,7 @@ interface Event {
   name: string;
   date: string;
   organization: 'FIN' | 'UISP' | 'ALTRO';
-  registration_deadline: string;
+  registration_deadline: string | null;
   event_link: string | null;
   distances: string | null;
   notes: string | null;
@@ -45,7 +45,7 @@ export default function EventForm({ event, onClose, onSaved, currentUserId }: Ev
       name,
       date,
       organization,
-      registration_deadline: deadline,
+      registration_deadline: deadline || null,
       event_link: eventLink || null,
       distances: distances || null,
       notes: notes || null,
@@ -139,7 +139,7 @@ export default function EventForm({ event, onClose, onSaved, currentUserId }: Ev
 
               {/* Termine Iscrizioni */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300 ml-1">Scadenza Iscrizioni *</label>
+                <label className="text-sm font-medium text-gray-300 ml-1">Scadenza Iscrizioni</label>
                 <div className="input-group">
                   <AlertCircle className="input-icon" size={18} />
                   <input 
@@ -147,7 +147,6 @@ export default function EventForm({ event, onClose, onSaved, currentUserId }: Ev
                     className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-4 sm:py-3 input-with-icon focus:outline-none focus:border-blue-500 focus:bg-white/5 transition-all text-white text-base"
                     value={deadline}
                     onChange={(e) => setDeadline(e.target.value)}
-                    required
                   />
                 </div>
               </div>
