@@ -1,8 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
     <style>
-      .peak { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-weight: 800; font-size: 140px; fill: #1a4c8e; letter-spacing: -3px;}
-      .swim { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-weight: 300; font-size: 130px; fill: #4ca2d6; }
+      .peak { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-weight: 900; font-size: 120px; fill: #1a4c8e; letter-spacing: -3px;}
+      .swim { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-weight: 300; font-size: 110px; fill: #4ca2d6; letter-spacing: -1px;}
+      .calendar { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 45px; fill: #64748b; letter-spacing: 4px; text-transform: uppercase; }
       .wave1 { fill: #4ca2d6; }
       .wave2 { fill: #1a4c8e; }
       .swimmer { fill: #4ca2d6; }
@@ -10,11 +11,12 @@
   </defs>
   
   <!-- Text: Top Left -->
-  <text x="50" y="160" class="peak">peak</text>
-  <text x="50" y="270" class="swim">Swim</text>
+  <text x="40" y="130" class="peak">peak</text>
+  <text x="40" y="230" class="swim">Swim</text>
+  <text x="45" y="285" class="calendar">CALENDAR</text>
   
   <!-- Icon: Centered Slightly Bottom Right -->
-  <g transform="translate(110, 270) scale(0.65)">
+  <g transform="translate(150, 260) scale(0.6)">
     <!-- Swimmer head -->
     <circle cx="430" cy="70" r="35" class="swimmer" />
     
