@@ -4,6 +4,7 @@ import { Calendar, Plus, LogOut, Settings, Trash2, Edit2, ExternalLink, AlignLef
 
 import EventForm from './EventForm';
 import ProfileModal from './ProfileModal';
+import EventDetailsModal from './EventDetailsModal';
 
 interface Event {
   id: string;
@@ -33,6 +34,7 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
   const [showForm, setShowForm] = React.useState(false);
   const [showProfile, setShowProfile] = React.useState(false);
   const [editingEvent, setEditingEvent] = React.useState<Event | undefined>(undefined);
+  const [viewingEvent, setViewingEvent] = React.useState<Event | null>(null);
   const [userProfile, setUserProfile] = React.useState<{ first_name: string | null, last_name: string | null } | null>(null);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
 
@@ -259,7 +261,9 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                           return (
                             <tr key={event.id} className={`group transition-colors`}>
                             <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 ${rowBgColor}`}>
-                              <div className="font-bold text-slate-900 group-hover:text-sky-600 text-[12px] md:text-sm whitespace-normal break-words">{event.name}</div>
+                              <button onClick={() => setViewingEvent(event)} className="text-left font-bold text-slate-900 group-hover:text-sky-600 hover:underline text-[12px] md:text-sm whitespace-normal break-words cursor-pointer">
+                                {event.name}
+                              </button>
                             </td>
                             <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
                               <span className={`px-2 py-0.5 rounded text-[10px] font-black border w-max ${
@@ -347,7 +351,11 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
 
                           return (
                             <tr key={event.id} className={`italic line-through decoration-slate-400 transition-colors`}>
-                            <td className={`px-1.5 md:px-4 py-4 border-r border-black/5 last:border-r-0 text-[12px] md:text-sm whitespace-normal break-words ${rowBgColor}`}>{event.name}</td>
+                            <td className={`px-1.5 md:px-4 py-4 border-r border-black/5 last:border-r-0 text-[12px] md:text-sm whitespace-normal break-words ${rowBgColor}`}>
+                              <button onClick={() => setViewingEvent(event)} className="text-left font-bold hover:text-sky-600 hover:underline cursor-pointer">
+                                {event.name}
+                              </button>
+                            </td>
                             <td className={`px-1.5 md:px-4 py-4 border-r border-black/5 last:border-r-0 hidden sm:table-cell landscape:table-cell ${rowBgColor}`}>
                               <span className={`px-2 py-0.5 rounded text-[10px] font-black border ${
                                 event.organization === 'FIN' ? 'bg-sky-500/20 text-sky-600 border-sky-500/20' :
@@ -439,6 +447,13 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
             checkUser();
             fetchEvents();
           }}
+        />
+      )}
+
+      {viewingEvent && (
+        <EventDetailsModal
+          event={viewingEvent}
+          onClose={() => setViewingEvent(null)}
         />
       )}
 
