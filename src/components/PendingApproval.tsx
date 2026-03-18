@@ -14,7 +14,7 @@ function PendingApproval() {
           <Clock className="text-yellow-500" size={32} />
         </div>
         
-        <h2 className="text-2xl font-bold text-white mb-4">In attesa di approvazione</h2>
+        <h2 className="text-2xl font-bold text-white mb-4">In attesa di conferma</h2>
         
         <p className="text-gray-400 mb-8 leading-relaxed">
           Il tuo account è stato creato con successo, ma deve essere approvato da un amministratore prima di poter accedere al calendario gare.
