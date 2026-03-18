@@ -132,8 +132,8 @@ function AdminPanel({ onNavigateToCalendar }: { onNavigateToCalendar: () => void
         <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-xl border-b border-white/10 shadow-2xl">
           <div className="max-w-7xl mx-auto flex items-center justify-between p-3 md:px-8 md:py-4">
             <div className="flex items-center gap-3 md:gap-4">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/10 overflow-hidden shrink-0">
-                <img src="/logo.png" alt="Logo" className="w-full h-full object-cover scale-150" />
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-white/10 p-1.5 shrink-0">
+                <img src="/logo.svg" alt="Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <h1 className="text-lg md:text-2xl font-black text-white tracking-tighter uppercase leading-none">Admin Panel</h1>

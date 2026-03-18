@@ -1,0 +1,16 @@
+{
+  "name": "peakmooring-jobs",
+  "version": "1.0.0",
+  "description": "Background jobs for PeakMooring",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync-gare": "node sync-gare.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.99.2",
+    "axios": "^1.13.6",
+    "cheerio": "^1.2.0"
+  }
+}
