@@ -76,7 +76,8 @@ function Auth({ onBack }: { onBack: () => void }) {
       <div className="w-full max-w-[400px]">
         {/* Header */}
         <div className="text-center mb-6">
-          <h2 className="text-3xl font-black tracking-tighter text-white uppercase">OpenWater Regs</h2>
+          <img src="/logo.svg" alt="PeakSwimCalendar" className="h-20 mx-auto mb-4 drop-shadow-lg" />
+          <h2 className="text-3xl font-black tracking-tighter text-white uppercase">PeakSwimCalendar</h2>
           <p className="text-blue-300/80 mt-1 font-medium">Calendario Gare Nuoto</p>
         </div>
 

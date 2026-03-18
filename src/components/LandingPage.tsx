@@ -7,7 +7,8 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
       
       <header className="container py-12">
         <nav className="flex flex-col items-center justify-center">
-          <span className="text-3xl font-black text-white tracking-tighter uppercase">OpenWater Regs</span>
+          <img src="/logo.svg" alt="PeakSwimCalendar" className="h-16 mb-4" />
+          <span className="text-3xl font-black text-white tracking-tighter uppercase">PeakSwimCalendar</span>
         </nav>
       </header>
 
@@ -71,7 +72,7 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
           <div className="text-center mb-12 relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Come accedere alla piattaforma?</h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Per garantire la qualità delle informazioni, l'accesso a OpenWater Regs prevede un semplice processo di verifica in tre passaggi.
+              Per garantire la qualità delle informazioni, l'accesso a PeakSwimCalendar prevede un semplice processo di verifica in tre passaggi.
             </p>
           </div>
 
@@ -118,7 +119,7 @@ function LandingPage({ onLogin }: { onLogin: () => void }) {
       </main>
 
       <footer className="container py-8 text-center text-gray-500 text-sm border-t border-white/5">
-        <p className="mb-2">© {new Date().getFullYear()} OpenWater Regs</p>
+        <p className="mb-2">© {new Date().getFullYear()} PeakSwimCalendar</p>
         <p className="text-xs text-gray-600">Calendario gare amatoriale. Non affiliato ufficialmente con FIN o UISP.</p>
       </footer>
     </div>

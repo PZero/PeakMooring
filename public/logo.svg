@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .peak { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-weight: 800; font-size: 140px; fill: #1a4c8e; letter-spacing: -3px;}
+      .swim { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; font-weight: 300; font-size: 130px; fill: #4ca2d6; }
+      .wave1 { fill: #4ca2d6; }
+      .wave2 { fill: #1a4c8e; }
+      .swimmer { fill: #4ca2d6; }
+    </style>
+  </defs>
+  
+  <!-- Text: Top Left -->
+  <text x="50" y="160" class="peak">peak</text>
+  <text x="50" y="270" class="swim">Swim</text>
+  
+  <!-- Icon: Centered Slightly Bottom Right -->
+  <g transform="translate(110, 270) scale(0.65)">
+    <!-- Swimmer head -->
+    <circle cx="430" cy="70" r="35" class="swimmer" />
+    
+    <!-- Swimmer body & arm -->
+    <path d="M 230,140 C 270,100 350,70 390,110 C 410,130 380,150 360,135 C 330,115 280,130 250,165 Z" class="swimmer" />
+    <path d="M 370,115 C 320,30 230,60 190,110 C 170,130 150,135 120,145 L 140,175 C 190,155 230,125 250,95 C 280,55 330,65 350,110 Z" class="swimmer" />
+    
+    <!-- Waves -->
+    <path d="M 0,190 C 150,140 250,230 400,180 C 480,150 550,190 600,190 L 600,270 L 0,270 Z" class="wave1" />
+    <path d="M 0,240 C 200,190 300,280 450,220 C 520,190 580,240 600,240 L 600,270 L 0,270 Z" class="wave2" />
+  </g>
+</svg>
