@@ -396,8 +396,8 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
         className="fixed bottom-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between p-2 md:px-8 md:py-2">
-          {/* Left/Center: Profile Info */}
+        <div className="max-w-7xl mx-auto relative flex items-center justify-center p-2 md:px-8 md:py-2 min-h-[52px]">
+          {/* Center: Profile Info */}
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white border border-white/10 shadow-inner shrink-0">
               <span className="text-[12px] font-black uppercase">{userProfile?.first_name?.charAt(0) || 'A'}</span>
@@ -415,13 +415,15 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
           </div>
 
           {/* Right: Logout */}
-          <button 
-            onClick={() => setShowLogoutConfirm(true)} 
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500 hover:text-red-400 hover:bg-red-500/20 transition-all active:scale-95 shrink-0"
-            title="Esci dalla sessione"
-          >
-            <LogOut size={18} />
-          </button>
+          <div className="absolute right-3 md:right-8">
+            <button 
+              onClick={() => setShowLogoutConfirm(true)} 
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500 hover:text-red-400 hover:bg-red-500/20 transition-all active:scale-95 shrink-0"
+              title="Esci dalla sessione"
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
