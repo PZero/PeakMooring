@@ -275,8 +275,8 @@ export default function EventsCalendar({ onNavigateToAdmin }: { onNavigateToAdmi
                               </span>
                             </td>
                             <td className={`px-1.5 md:px-4 py-3 md:py-4 border-r border-black/5 last:border-r-0 whitespace-nowrap ${rowBgColor}`}>
-                              <div className="flex items-center gap-1 text-slate-700 font-bold capitalize text-[12px] md:text-sm">
-                                <Calendar size={12} className="text-slate-500" />
+                              <div className="inline-flex items-center gap-1 px-1.5 py-1 rounded-lg font-bold text-[10px] md:text-sm capitalize text-slate-700">
+                                <Calendar size={10} className="text-slate-500" />
                                 {formatDateShort(event.date)}
                               </div>
                             </td>
